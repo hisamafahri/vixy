@@ -111,5 +111,16 @@ app.get("/users/:id/posts", (c) => {
   });
 });
 
+// Request metadata example
+app.get("/api/:version/info", (c) => {
+  return c.json({
+    href: c.req.href,
+    pathname: c.req.pathname,
+    routePathname: c.req.routePathname,
+    version: c.req.param("version"),
+    allQueryParams: c.req.query(),
+  });
+});
+
 // 404 for unmatched routes is handled automatically
 export default app;

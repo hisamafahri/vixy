@@ -1,3 +1,17 @@
+export interface IvyRequest {
+  raw: Request;
+  param: (name: string) => string | undefined;
+  params: Record<string, string>;
+  query: {
+    (): Record<string, string>;
+    (name: string): string | undefined;
+  };
+  queries: (name: string) => string[] | undefined;
+  href: string;
+  pathname: string;
+  routePathname: string;
+}
+
 export class Context {
   // TODO:
   // - headers
@@ -9,18 +23,13 @@ export class Context {
   //   * arrayBuffer
   //   * blob
   // - body validators (blocked by middleware implementation)
-  req: {
-    raw: Request;
-    param: (name: string) => string | undefined;
-    params: Record<string, string>;
-    query: {
-      (): Record<string, string>;
-      (name: string): string | undefined;
-    };
-    queries: (name: string) => string[] | undefined;
-  };
+  req: IvyRequest;
 
-  constructor(rawRequest: Request, params: Record<string, string> = {}) {
+  constructor(
+    rawRequest: Request,
+    params: Record<string, string> = {},
+    routePathname: string = ""
+  ) {
     const url = new URL(rawRequest.url);
     const searchParams = url.searchParams;
 
@@ -50,6 +59,9 @@ export class Context {
         const values = searchParams.getAll(name);
         return values.length > 0 ? values : undefined;
       },
+      href: rawRequest.url,
+      pathname: url.pathname,
+      routePathname: routePathname,
     };
   }
 

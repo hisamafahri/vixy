@@ -63,6 +63,18 @@ describe("Ivy", () => {
       expect(await response.text()).toBe("PATCH response");
     });
 
+    it("should register OPTIONS routes", async () => {
+      const app = new Ivy();
+
+      app.options("/test", (c) => c.text("OPTIONS response"));
+
+      const req = new Request("http://localhost/test", { method: "OPTIONS" });
+      const response = await app.fetch(req);
+
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe("OPTIONS response");
+    });
+
     it("should support method chaining", () => {
       const app = new Ivy();
 
@@ -568,6 +580,101 @@ describe("Ivy", () => {
       const response = await app.fetch(req);
 
       expect(await response.text()).toBe("Search: hello world");
+    });
+  });
+
+  describe("request metadata", () => {
+    it("should provide req.pathname", async () => {
+      const app = new Ivy();
+
+      app.get("/users/:id", (c) => {
+        return c.json({ pathname: c.req.pathname });
+      });
+
+      const req = new Request("http://localhost/users/123?auto=true", { method: "GET" });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({ pathname: "/users/123" });
+    });
+
+    it("should provide req.href with full URL", async () => {
+      const app = new Ivy();
+
+      app.get("/test", (c) => {
+        return c.json({ href: c.req.href });
+      });
+
+      const req = new Request("http://localhost:8787/test?foo=bar", { method: "GET" });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({ href: "http://localhost:8787/test?foo=bar" });
+    });
+
+    it("should provide req.routePathname with defined route pattern", async () => {
+      const app = new Ivy();
+
+      app.get("/users/:userId", (c) => {
+        return c.json({
+          pathname: c.req.pathname,
+          routePathname: c.req.routePathname,
+          userId: c.req.param("userId"),
+        });
+      });
+
+      const req = new Request("http://localhost/users/1232?auto=true", { method: "GET" });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({
+        pathname: "/users/1232",
+        routePathname: "/users/:userId",
+        userId: "1232",
+      });
+    });
+
+    it("should handle wildcard in routePathname", async () => {
+      const app = new Ivy();
+
+      app.get("/files/*/download", (c) => {
+        return c.json({
+          pathname: c.req.pathname,
+          routePathname: c.req.routePathname,
+        });
+      });
+
+      const req = new Request("http://localhost/files/abc123/download", { method: "GET" });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({
+        pathname: "/files/abc123/download",
+        routePathname: "/files/*/download",
+      });
+    });
+
+    it("should provide all metadata together", async () => {
+      const app = new Ivy();
+
+      app.get("/api/:version/users/:id", (c) => {
+        return c.json({
+          href: c.req.href,
+          pathname: c.req.pathname,
+          routePathname: c.req.routePathname,
+          version: c.req.param("version"),
+          id: c.req.param("id"),
+          format: c.req.query("format"),
+        });
+      });
+
+      const req = new Request("http://localhost:8787/api/v2/users/1232?format=json", { method: "GET" });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({
+        href: "http://localhost:8787/api/v2/users/1232?format=json",
+        pathname: "/api/v2/users/1232",
+        routePathname: "/api/:version/users/:id",
+        version: "v2",
+        id: "1232",
+        format: "json",
+      });
     });
   });
 });

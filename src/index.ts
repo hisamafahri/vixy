@@ -1,6 +1,6 @@
 import { Context } from "./context";
 
-type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
 type Handler = (c: Context) => Response | Promise<Response>;
 
@@ -99,6 +99,12 @@ export default class Ivy {
     return this;
   }
 
+  options(path: string, handler: Handler): this {
+    const { pattern, paramNames } = this.compileRoute(path);
+    this.routes.push({ method: "OPTIONS", path, handler, pattern, paramNames });
+    return this;
+  }
+
   async fetch(req: Request): Promise<Response> {
     const url = new URL(req.url);
     const pathname = url.pathname;
@@ -113,11 +119,14 @@ export default class Ivy {
           // Extract params if any
           if (route.paramNames && route.paramNames.length > 0) {
             route.paramNames.forEach((name, index) => {
-              params[name] = match[index + 1];
+              const value = match[index + 1];
+              if (value !== undefined) {
+                params[name] = value;
+              }
             });
           }
 
-          const context = new Context(req, params);
+          const context = new Context(req, params, route.path);
           return await route.handler(context);
         }
       }

@@ -286,4 +286,73 @@ describe("Context", () => {
       expect(tags).toEqual(["hello world", "foo bar"]);
     });
   });
+
+  describe("req.href", () => {
+    it("should provide full URL including query parameters", () => {
+      const req = new Request("http://localhost:8787/users/123?auto=true&format=json");
+      const ctx = new Context(req);
+
+      expect(ctx.req.href).toBe("http://localhost:8787/users/123?auto=true&format=json");
+    });
+
+    it("should work with URL without query parameters", () => {
+      const req = new Request("http://localhost/users/123");
+      const ctx = new Context(req);
+
+      expect(ctx.req.href).toBe("http://localhost/users/123");
+    });
+  });
+
+  describe("req.pathname", () => {
+    it("should provide pathname of the request", () => {
+      const req = new Request("http://localhost/users/123?auto=true");
+      const ctx = new Context(req);
+
+      expect(ctx.req.pathname).toBe("/users/123");
+    });
+
+    it("should handle root path", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new Context(req);
+
+      expect(ctx.req.pathname).toBe("/");
+    });
+
+    it("should not include query parameters", () => {
+      const req = new Request("http://localhost/search?q=test&limit=10");
+      const ctx = new Context(req);
+
+      expect(ctx.req.pathname).toBe("/search");
+    });
+  });
+
+  describe("req.routePathname", () => {
+    it("should provide the defined route path pattern", () => {
+      const req = new Request("http://localhost/users/123");
+      const ctx = new Context(req, { userId: "123" }, "/users/:userId");
+
+      expect(ctx.req.routePathname).toBe("/users/:userId");
+    });
+
+    it("should work with wildcard routes", () => {
+      const req = new Request("http://localhost/files/abc/download");
+      const ctx = new Context(req, {}, "/files/*/download");
+
+      expect(ctx.req.routePathname).toBe("/files/*/download");
+    });
+
+    it("should be empty string when not provided", () => {
+      const req = new Request("http://localhost/test");
+      const ctx = new Context(req);
+
+      expect(ctx.req.routePathname).toBe("");
+    });
+
+    it("should handle static routes", () => {
+      const req = new Request("http://localhost/about");
+      const ctx = new Context(req, {}, "/about");
+
+      expect(ctx.req.routePathname).toBe("/about");
+    });
+  });
 });
