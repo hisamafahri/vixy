@@ -1,54 +1,39 @@
+import FindMyWay from "find-my-way";
 import { Context } from "./context";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
 type Handler = (c: Context) => Response | Promise<Response>;
 
-interface Route {
-  method: Method;
-  path: string;
+interface RouteStore {
   handler: Handler;
-  pattern?: RegExp;
-  paramNames?: string[];
+  path: string;
 }
 
 export default class Ivy {
-  private routes: Route[] = [];
+  private router: FindMyWay.Instance<FindMyWay.HTTPVersion.V1>;
 
   constructor() {
     // Bind fetch to maintain context when called by Bun
     this.fetch = this.fetch.bind(this);
+
+    // Initialize find-my-way router
+    this.router = FindMyWay({
+      defaultRoute: () => {
+        // Default route is handled in fetch method
+      },
+    });
   }
 
-  // NOTE:
-  // This is a simple route compiler that supports:
-  // - Static paths (e.g., /about)
-  // - Parameterized paths (e.g., /users/:id)
-  // - Wildcard paths (e.g., /files/*)
-  //
-  // At the moment, I am not sure about how "secure" this implementation is.
-  private compileRoute(path: string): {
-    pattern: RegExp;
-    paramNames: string[];
-  } {
-    const paramNames: string[] = [];
-
-    // Escape special regex characters except * and :
-    let pattern = path.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
-
-    // Replace :param with named capture groups
-    pattern = pattern.replace(/:(\w+)/g, (_, paramName) => {
-      paramNames.push(paramName);
-      return "([^/]+)";
+  // Convert wildcard routes to find-my-way compatible format
+  // find-my-way only supports wildcards at the end of paths
+  // Convert /foo/*/bar to /foo/:wildcard1/bar
+  private convertWildcardPath(path: string): string {
+    let wildcardCount = 0;
+    return path.replace(/\*/g, () => {
+      wildcardCount++;
+      return `:wildcard${wildcardCount}`;
     });
-
-    // Replace * with wildcard pattern
-    pattern = pattern.replace(/\*/g, "[^/]+");
-
-    return {
-      pattern: new RegExp(`^${pattern}$`),
-      paramNames,
-    };
   }
 
   // TODO:
@@ -67,8 +52,9 @@ export default class Ivy {
 
     for (const method of methodArray) {
       for (const path of pathArray) {
-        const { pattern, paramNames } = this.compileRoute(path);
-        this.routes.push({ method, path, handler, pattern, paramNames });
+        const convertedPath = this.convertWildcardPath(path);
+        const store: RouteStore = { handler, path };
+        this.router.on(method, convertedPath, () => {}, store);
       }
     }
 
@@ -76,66 +62,71 @@ export default class Ivy {
   }
 
   get(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "GET", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("GET", convertedPath, () => {}, store);
     return this;
   }
 
   post(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "POST", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("POST", convertedPath, () => {}, store);
     return this;
   }
 
   put(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "PUT", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("PUT", convertedPath, () => {}, store);
     return this;
   }
 
   delete(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "DELETE", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("DELETE", convertedPath, () => {}, store);
     return this;
   }
 
   patch(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "PATCH", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("PATCH", convertedPath, () => {}, store);
     return this;
   }
 
   options(path: string, handler: Handler): this {
-    const { pattern, paramNames } = this.compileRoute(path);
-    this.routes.push({ method: "OPTIONS", path, handler, pattern, paramNames });
+    const convertedPath = this.convertWildcardPath(path);
+    const store: RouteStore = { handler, path };
+    this.router.on("OPTIONS", convertedPath, () => {}, store);
     return this;
   }
 
   async fetch(req: Request): Promise<Response> {
     const url = new URL(req.url);
     const pathname = url.pathname;
-    const method = req.method;
+    const method = req.method as Method;
 
-    for (const route of this.routes) {
-      if (route.method === method && route.pattern) {
-        const match = pathname.match(route.pattern);
-        if (match) {
-          const params: Record<string, string> = {};
+    // Use find-my-way to locate the route
+    const route = this.router.find(method, pathname);
 
-          // Extract params if any
-          if (route.paramNames && route.paramNames.length > 0) {
-            route.paramNames.forEach((name, index) => {
-              const value = match[index + 1];
-              if (value !== undefined) {
-                params[name] = value;
-              }
-            });
+    if (route && route.store) {
+      const { handler, path } = route.store as RouteStore;
+
+      // Get params from find-my-way, but filter out wildcard params
+      const params: Record<string, string> = {};
+      if (route.params) {
+        for (const [key, value] of Object.entries(route.params)) {
+          // Don't expose internal wildcard parameter names
+          if (!key.startsWith("wildcard")) {
+            params[key] = value as string;
           }
-
-          const context = new Context(req, params, route.path);
-          return await route.handler(context);
         }
       }
+
+      const context = new Context(req, params, path);
+      return await handler(context);
     }
 
     return new Response("Not Found", { status: 404 });
