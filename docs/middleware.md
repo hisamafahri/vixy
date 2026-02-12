@@ -38,6 +38,8 @@ const authMiddleware = async (c, next) => {
 app.get("/protected", authMiddleware, (c) => {
   return c.text("Protected content");
 });
+
+app.on("POST", "/protected", authMiddleware, (c) => c.res.text("POST response"));
 ```
 
 in a route handler, you can have multiple middleware functions:
