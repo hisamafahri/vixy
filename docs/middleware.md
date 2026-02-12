@@ -58,10 +58,6 @@ The execution order will be determined from the order they are defined, with glo
 If there's multiple global middleware, they will execute in the order they were added using `app.use()`.
 
 ```ts
-import Ivy from "../../src/index";
-
-const app = new Ivy();
-
 app.use("*", async (_, next) => {
   console.log("middleware 1 start");
   await next();

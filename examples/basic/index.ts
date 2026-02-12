@@ -2,28 +2,21 @@ import Ivy from "../../src/index";
 
 const app = new Ivy();
 
-// Simple GET route
 app.get("/", (c) => {
   return c.res.text("Hello World!");
 });
 
-// JSON response
-app.get("/users", (c) => {
+app.get("/greet", (c) => {
   return c.res.json({
-    users: [
-      { id: 1, name: "Alice" },
-      { id: 2, name: "Bob" },
-    ],
+    message: "Hello",
   });
 });
 
-// Route with parameters
 app.get("/users/:id", (c) => {
   const id = c.req.param("id");
   return c.res.json({ userId: id, name: `User ${id}` });
 });
 
-// Multiple route parameters
 app.get("/posts/:postId/comments/:commentId", (c) => {
   const postId = c.req.param("postId");
   const commentId = c.req.param("commentId");
@@ -33,7 +26,15 @@ app.get("/posts/:postId/comments/:commentId", (c) => {
   });
 });
 
-// POST route with JSON body parser
+// DELETE route with null response (204 No Content)
+app.delete("/users/:id", (c) => {
+  const id = c.req.param("id");
+  // Perform deletion logic here
+  return c.res.null(); // Returns 204 by default
+});
+
+// BODY PARSERS
+
 app.post("/users", async (c) => {
   const body = await c.req.json();
   return c.res.json(
@@ -45,33 +46,11 @@ app.post("/users", async (c) => {
   );
 });
 
-// DELETE route with null response (204 No Content)
-app.delete("/users/:id", (c) => {
-  const id = c.req.param("id");
-  // Perform deletion logic here
-  return c.res.null(); // Returns 204 by default
-});
-
-// PUT route with null response (304 Not Modified)
-app.put("/cache/:key", (c) => {
-  const key = c.req.param("key");
-  // Check if resource was modified, if not:
-  return c.res.null(304); // Returns 304 Not Modified
-});
-
-// POST route with null response (205 Reset Content)
-app.post("/form/clear", (c) => {
-  // Process form and tell client to reset the form
-  return c.res.null(205); // Returns 205 Reset Content
-});
-
-// Text body parser
 app.post("/echo", async (c) => {
   const text = await c.req.text();
   return c.res.text(`You sent: ${text}`);
 });
 
-// Form data body parser
 app.post("/contact", async (c) => {
   const formData = await c.req.formData();
   const name = formData.get("name");
@@ -84,7 +63,6 @@ app.post("/contact", async (c) => {
   });
 });
 
-// Binary data body parser
 app.post("/upload", async (c) => {
   const buffer = await c.req.arrayBuffer();
   const blob = await c.req.blob();
@@ -93,20 +71,6 @@ app.post("/upload", async (c) => {
     message: "File uploaded",
     size: buffer.byteLength,
     blobSize: blob.size,
-  });
-});
-
-// Multiple body parser calls - demonstrating caching
-app.post("/analyze", async (c) => {
-  // You can call multiple body parsers without "Body already used" error
-  const json = await c.req.json();
-  const text = await c.req.text();
-  const buffer = await c.req.arrayBuffer();
-
-  return c.res.json({
-    parsedData: json,
-    rawTextLength: text.length,
-    bufferSize: buffer.byteLength,
   });
 });
 
@@ -125,104 +89,3 @@ app.get("/about", (c) => {
     </html>
   `);
 });
-
-// Multiple methods on same path
-app.on(["GET", "POST"], "/multi", (c) => {
-  return c.res.text(`Method: ${c.req.raw.method}`);
-});
-
-// Query parameters - single value
-app.get("/search", (c) => {
-  const query = c.req.query("q");
-  const limit = c.req.query("limit") || "10";
-  return c.res.json({
-    query,
-    limit,
-    results: [],
-  });
-});
-
-// Query parameters - get all at once
-app.get("/filter", (c) => {
-  const { category, minPrice, maxPrice } = c.req.query();
-  return c.res.json({
-    category,
-    minPrice,
-    maxPrice,
-    items: [],
-  });
-});
-
-// Multiple query values
-app.get("/tags", (c) => {
-  const tags = c.req.queries("tag");
-  return c.res.json({
-    tags: tags || [],
-    count: tags?.length || 0,
-  });
-});
-
-// Combining path params and query params
-app.get("/users/:id/posts", (c) => {
-  const userId = c.req.param("id");
-  const page = c.req.query("page") || "1";
-  const limit = c.req.query("limit") || "10";
-
-  return c.res.json({
-    userId,
-    page: parseInt(page),
-    limit: parseInt(limit),
-    posts: [],
-  });
-});
-
-// Request metadata example
-app.get("/api/:version/info", (c) => {
-  return c.res.json({
-    href: c.req.href,
-    pathname: c.req.pathname,
-    routePathname: c.req.routePathname,
-    version: c.req.param("version"),
-    allQueryParams: c.req.query(),
-  });
-});
-
-// Request headers example
-app.get("/headers", (c) => {
-  const userAgent = c.req.header("User-Agent");
-  const accept = c.req.header("Accept");
-  const authorization = c.req.header("Authorization");
-
-  return c.res.json({
-    userAgent,
-    accept,
-    authorization: authorization ? "Present" : "Missing",
-  });
-});
-
-// Cookies example
-app.get("/profile", (c) => {
-  const sessionId = c.req.cookie("session_id");
-  const userId = c.req.cookie("user_id");
-  const allCookies = c.req.cookie();
-
-  return c.res.json({
-    sessionId,
-    userId,
-    cookieCount: Object.keys(allCookies).length,
-  });
-});
-
-// Custom 404 handler
-app.notFound((c) => {
-  return c.res.json(
-    {
-      error: "Not Found",
-      message: `The path ${c.req.pathname} does not exist`,
-      method: c.req.raw.method,
-    },
-    404,
-  );
-});
-
-export default app;
