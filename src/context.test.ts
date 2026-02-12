@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { Context } from "./context";
+import { IvyContext } from "./context";
 
-describe("Context", () => {
+describe("IvyContext", () => {
   describe("res.text()", () => {
     it("should return text response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.text("Hello World");
 
@@ -16,7 +16,7 @@ describe("Context", () => {
 
     it("should return text response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.text("Created", 201);
 
@@ -28,7 +28,7 @@ describe("Context", () => {
   describe("res.json()", () => {
     it("should return JSON response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
       const data = { message: "Hello JSON" };
 
       const response = ctx.res.json(data);
@@ -40,7 +40,7 @@ describe("Context", () => {
 
     it("should return JSON response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
       const data = { error: "Not Found" };
 
       const response = ctx.res.json(data, 404);
@@ -51,7 +51,7 @@ describe("Context", () => {
 
     it("should handle array data", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
       const data = [1, 2, 3];
 
       const response = ctx.res.json(data);
@@ -63,7 +63,7 @@ describe("Context", () => {
   describe("res.html()", () => {
     it("should return HTML response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
       const html = "<h1>Hello HTML</h1>";
 
       const response = ctx.res.html(html);
@@ -75,7 +75,7 @@ describe("Context", () => {
 
     it("should return HTML response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
       const html = "<h1>Server Error</h1>";
 
       const response = ctx.res.html(html, 500);
@@ -88,7 +88,7 @@ describe("Context", () => {
   describe("res.null()", () => {
     it("should return null response with default status 204", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.null();
 
@@ -98,7 +98,7 @@ describe("Context", () => {
 
     it("should return null response with custom status 204", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.null(204);
 
@@ -108,7 +108,7 @@ describe("Context", () => {
 
     it("should return null response with status 205", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.null(205);
 
@@ -118,7 +118,7 @@ describe("Context", () => {
 
     it("should return null response with status 304", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.null(304);
 
@@ -128,7 +128,7 @@ describe("Context", () => {
 
     it("should not have Content-Type header", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const response = ctx.res.null();
 
@@ -139,7 +139,7 @@ describe("Context", () => {
   describe("constructor", () => {
     it("should store the raw request object", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.raw).toBe(req);
       expect(ctx.req.raw.url).toBe("http://localhost/test");
@@ -148,7 +148,7 @@ describe("Context", () => {
     it("should store params when provided", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123", name: "john" };
-      const ctx = new Context(req, params);
+      const ctx = new IvyContext(req, params);
 
       expect(ctx.req.param("id")).toBe("123");
       expect(ctx.req.param("name")).toBe("john");
@@ -157,7 +157,7 @@ describe("Context", () => {
 
     it("should initialize with empty params when not provided", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.param("anything")).toBeUndefined();
       expect(ctx.req.params).toEqual({});
@@ -166,7 +166,7 @@ describe("Context", () => {
     it("should provide param method on req object", () => {
       const req = new Request("http://localhost/test");
       const params = { userId: "999" };
-      const ctx = new Context(req, params);
+      const ctx = new IvyContext(req, params);
 
       expect(ctx.req.param("userId")).toBe("999");
       expect(ctx.req.param("nonExistent")).toBeUndefined();
@@ -177,7 +177,7 @@ describe("Context", () => {
     it("should return param value when it exists", () => {
       const req = new Request("http://localhost/test");
       const params = { userId: "456", action: "edit" };
-      const ctx = new Context(req, params);
+      const ctx = new IvyContext(req, params);
 
       expect(ctx.req.param("userId")).toBe("456");
       expect(ctx.req.param("action")).toBe("edit");
@@ -186,14 +186,14 @@ describe("Context", () => {
     it("should return undefined for non-existent param", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123" };
-      const ctx = new Context(req, params);
+      const ctx = new IvyContext(req, params);
 
       expect(ctx.req.param("nonExistent")).toBeUndefined();
     });
 
     it("should return undefined when no params were set", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.param("id")).toBeUndefined();
     });
@@ -203,7 +203,7 @@ describe("Context", () => {
     it("should provide direct access to params object", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123", name: "test" };
-      const ctx = new Context(req, params);
+      const ctx = new IvyContext(req, params);
 
       expect(ctx.req.params.id).toBe("123");
       expect(ctx.req.params.name).toBe("test");
@@ -216,7 +216,7 @@ describe("Context", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.raw.url).toBe("http://localhost/test?foo=bar");
       expect(ctx.req.raw.method).toBe("POST");
@@ -229,7 +229,7 @@ describe("Context", () => {
         body: JSON.stringify({ key: "value" }),
         headers: { "Content-Type": "application/json" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const body = await ctx.req.raw.json();
       expect(body).toEqual({ key: "value" });
@@ -239,7 +239,7 @@ describe("Context", () => {
   describe("req.query()", () => {
     it("should return specific query parameter", () => {
       const req = new Request("http://localhost/search?q=hello&limit=10");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.query("q")).toBe("hello");
       expect(ctx.req.query("limit")).toBe("10");
@@ -247,7 +247,7 @@ describe("Context", () => {
 
     it("should return undefined for non-existent query parameter", () => {
       const req = new Request("http://localhost/search?q=hello");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.query("nonExistent")).toBeUndefined();
     });
@@ -256,7 +256,7 @@ describe("Context", () => {
       const req = new Request(
         "http://localhost/search?q=hello&limit=10&offset=0",
       );
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const allParams = ctx.req.query();
       expect(allParams).toEqual({
@@ -268,7 +268,7 @@ describe("Context", () => {
 
     it("should return empty object when no query parameters", () => {
       const req = new Request("http://localhost/search");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const allParams = ctx.req.query();
       expect(allParams).toEqual({});
@@ -278,7 +278,7 @@ describe("Context", () => {
       const req = new Request(
         "http://localhost/search?q=hello%20world&name=John%20Doe",
       );
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.query("q")).toBe("hello world");
       expect(ctx.req.query("name")).toBe("John Doe");
@@ -286,7 +286,7 @@ describe("Context", () => {
 
     it("should return first value for duplicate query parameters", () => {
       const req = new Request("http://localhost/search?tag=A&tag=B");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.query("tag")).toBe("A");
     });
@@ -295,7 +295,7 @@ describe("Context", () => {
   describe("req.queries()", () => {
     it("should return array of values for multiple query parameters", () => {
       const req = new Request("http://localhost/search?tags=A&tags=B&tags=C");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toEqual(["A", "B", "C"]);
@@ -303,7 +303,7 @@ describe("Context", () => {
 
     it("should return array with single value for single parameter", () => {
       const req = new Request("http://localhost/search?tag=A");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const tags = ctx.req.queries("tag");
       expect(tags).toEqual(["A"]);
@@ -311,7 +311,7 @@ describe("Context", () => {
 
     it("should return undefined for non-existent parameter", () => {
       const req = new Request("http://localhost/search?q=hello");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toBeUndefined();
@@ -321,7 +321,7 @@ describe("Context", () => {
       const req = new Request(
         "http://localhost/search?tags=A&tags=B&colors=red&colors=blue",
       );
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.queries("tags")).toEqual(["A", "B"]);
       expect(ctx.req.queries("colors")).toEqual(["red", "blue"]);
@@ -331,7 +331,7 @@ describe("Context", () => {
       const req = new Request(
         "http://localhost/search?tags=hello%20world&tags=foo%20bar",
       );
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toEqual(["hello world", "foo bar"]);
@@ -343,7 +343,7 @@ describe("Context", () => {
       const req = new Request(
         "http://localhost:8787/users/123?auto=true&format=json",
       );
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.href).toBe(
         "http://localhost:8787/users/123?auto=true&format=json",
@@ -352,7 +352,7 @@ describe("Context", () => {
 
     it("should work with URL without query parameters", () => {
       const req = new Request("http://localhost/users/123");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.href).toBe("http://localhost/users/123");
     });
@@ -361,21 +361,21 @@ describe("Context", () => {
   describe("req.pathname", () => {
     it("should provide pathname of the request", () => {
       const req = new Request("http://localhost/users/123?auto=true");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.pathname).toBe("/users/123");
     });
 
     it("should handle root path", () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.pathname).toBe("/");
     });
 
     it("should not include query parameters", () => {
       const req = new Request("http://localhost/search?q=test&limit=10");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.pathname).toBe("/search");
     });
@@ -384,28 +384,28 @@ describe("Context", () => {
   describe("req.routePathname", () => {
     it("should provide the defined route path pattern", () => {
       const req = new Request("http://localhost/users/123");
-      const ctx = new Context(req, { userId: "123" }, "/users/:userId");
+      const ctx = new IvyContext(req, { userId: "123" }, "/users/:userId");
 
       expect(ctx.req.routePathname).toBe("/users/:userId");
     });
 
     it("should work with wildcard routes", () => {
       const req = new Request("http://localhost/files/abc/download");
-      const ctx = new Context(req, {}, "/files/*/download");
+      const ctx = new IvyContext(req, {}, "/files/*/download");
 
       expect(ctx.req.routePathname).toBe("/files/*/download");
     });
 
     it("should be empty string when not provided", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.routePathname).toBe("");
     });
 
     it("should handle static routes", () => {
       const req = new Request("http://localhost/about");
-      const ctx = new Context(req, {}, "/about");
+      const ctx = new IvyContext(req, {}, "/about");
 
       expect(ctx.req.routePathname).toBe("/about");
     });
@@ -416,7 +416,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123; theme=dark" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("session")).toBe("abc123");
       expect(ctx.req.cookie("theme")).toBe("dark");
@@ -426,7 +426,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("nonExistent")).toBeUndefined();
     });
@@ -435,7 +435,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123; theme=dark; lang=en" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({
@@ -447,7 +447,7 @@ describe("Context", () => {
 
     it("should return empty object when no cookies", () => {
       const req = new Request("http://localhost/");
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({});
@@ -457,7 +457,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "key1 = value1; key2= value2 ;key3 =value3" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("key1")).toBe("value1");
       expect(ctx.req.cookie("key2")).toBe("value2");
@@ -468,7 +468,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "data=hello%20world; token=Bearer%20abc123" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("data")).toBe("hello%20world");
       expect(ctx.req.cookie("token")).toBe("Bearer%20abc123");
@@ -478,7 +478,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("session")).toBe("abc123");
       expect(ctx.req.cookie()).toEqual({ session: "abc123" });
@@ -488,7 +488,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "validCookie=value; malformedCookie; another=test" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({
@@ -502,7 +502,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "empty=; session=abc123" },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("empty")).toBe("");
       expect(ctx.req.cookie("session")).toBe("abc123");
@@ -512,7 +512,7 @@ describe("Context", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "   key1=value1  ;  key2=value2   " },
       });
-      const ctx = new Context(req);
+      const ctx = new IvyContext(req);
 
       expect(ctx.req.cookie("key1")).toBe("value1");
       expect(ctx.req.cookie("key2")).toBe("value2");

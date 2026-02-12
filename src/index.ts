@@ -1,9 +1,9 @@
 import FindMyWay from "find-my-way";
-import { Context } from "./context";
+import { IvyContext } from "./context";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
-type Handler = (c: Context) => Response | Promise<Response>;
+type Handler = (c: IvyContext) => Response | Promise<Response>;
 
 interface RouteStore {
   handler: Handler;
@@ -38,6 +38,7 @@ export default class Ivy {
   }
 
   // TODO:
+  // - context passed to handlers
   // - `strict` mode for route matching (trailing slashes) like hono?
   // - middleware support
   // - route groups / prefixes
@@ -129,13 +130,13 @@ export default class Ivy {
         }
       }
 
-      const context = new Context(req, params, path);
+      const context = new IvyContext(req, params, path);
       return await handler(context);
     }
 
     // Handle not found with custom handler or default response
     if (this.notFoundHandler) {
-      const context = new Context(req, {}, pathname);
+      const context = new IvyContext(req, {}, pathname);
       return await this.notFoundHandler(context);
     }
 

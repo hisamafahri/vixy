@@ -34,7 +34,7 @@ export interface IvyResponse {
   null: (status?: ContentlessStatusCode) => Response;
 }
 
-export class Context {
+export class IvyContext {
   // TODO:
   // - body validators (blocked by middleware implementation)
   req: IvyRequest;
