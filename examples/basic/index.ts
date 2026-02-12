@@ -1,10 +1,25 @@
+import { IvyContext } from "../../src/context";
+import type { Next } from "../../src/index";
 import Ivy from "../../src/index";
 
 const app = new Ivy();
 
-app.get("/", (c) => {
-  return c.res.text("Hello World!");
-});
+const testMiddleware = async (c: IvyContext, next: Next): Promise<void> => {
+  console.log("Test middleware executed");
+  await next();
+};
+
+app.get(
+  "/",
+  testMiddleware,
+  testMiddleware,
+  testMiddleware,
+  testMiddleware,
+  testMiddleware,
+  (c) => {
+    return c.res.text("Hello World!");
+  },
+);
 
 app.get("/greet", (c) => {
   return c.res.json({
@@ -27,9 +42,7 @@ app.get("/posts/:postId/comments/:commentId", (c) => {
 });
 
 // DELETE route with null response (204 No Content)
-app.delete("/users/:id", (c) => {
-  const id = c.req.param("id");
-  // Perform deletion logic here
+app.delete("/null", (c) => {
   return c.res.null(); // Returns 204 by default
 });
 

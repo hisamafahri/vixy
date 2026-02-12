@@ -113,7 +113,7 @@ Middleware functions have the following type signature:
 type Middleware = (
   c: IvyContext,
   next: () => Promise<void>,
-) => Response | Promise<Response> | void | Promise<void>;
+) => Promise<Response | void>;
 ```
 
 **Parameters:**
