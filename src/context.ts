@@ -29,11 +29,11 @@ export interface IvyRequest {
 
 export interface IvyResponse {
   // TODO:
-  // - set headers
   // - set cookies
   // - send file/blob
   // - redirect
   // - send stream?
+  header: (key: string, value: any) => void;
   json: (data: any, status?: ContentfulStatusCode) => Response;
   text: (content: string, status?: ContentfulStatusCode) => Response;
   html: (content: string, status?: ContentfulStatusCode) => Response;
@@ -44,6 +44,7 @@ export class IvyContext {
   req: IvyRequest;
   res: IvyResponse;
   private bodyCache: ArrayBuffer | null = null;
+  private customHeaders: Record<string, string> = {};
 
   constructor(
     rawRequest: Request,
@@ -166,26 +167,32 @@ export class IvyContext {
     };
 
     this.res = {
+      header: (key: string, value: any): void => {
+        this.customHeaders[key] = String(value);
+      },
       text: (content: string, status = 200): Response => {
         return new Response(content, {
           status,
-          headers: { "Content-Type": "text/plain" },
+          headers: { "Content-Type": "text/plain", ...this.customHeaders },
         });
       },
       json: (data: any, status = 200): Response => {
         return new Response(JSON.stringify(data), {
           status,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...this.customHeaders,
+          },
         });
       },
       html: (content: string, status = 200): Response => {
         return new Response(content, {
           status,
-          headers: { "Content-Type": "text/html" },
+          headers: { "Content-Type": "text/html", ...this.customHeaders },
         });
       },
       null: (status = 204): Response => {
-        return new Response(null, { status });
+        return new Response(null, { status, headers: this.customHeaders });
       },
     };
   }

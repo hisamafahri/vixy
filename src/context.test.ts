@@ -411,6 +411,107 @@ describe("IvyContext", () => {
     });
   });
 
+  describe("res.header()", () => {
+    it("should set custom header on text response", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Custom-Header", "custom-value");
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("X-Custom-Header")).toBe("custom-value");
+      expect(response.headers.get("Content-Type")).toBe("text/plain");
+    });
+
+    it("should set custom header on json response", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Request-Id", "12345");
+      const response = ctx.res.json({ data: "test" });
+
+      expect(response.headers.get("X-Request-Id")).toBe("12345");
+      expect(response.headers.get("Content-Type")).toBe("application/json");
+    });
+
+    it("should set custom header on html response", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Frame-Options", "DENY");
+      const response = ctx.res.html("<h1>Test</h1>");
+
+      expect(response.headers.get("X-Frame-Options")).toBe("DENY");
+      expect(response.headers.get("Content-Type")).toBe("text/html");
+    });
+
+    it("should set custom header on null response", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Custom", "value");
+      const response = ctx.res.null();
+
+      expect(response.headers.get("X-Custom")).toBe("value");
+    });
+
+    it("should set multiple custom headers", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Header-1", "value1");
+      ctx.res.header("X-Header-2", "value2");
+      ctx.res.header("X-Header-3", "value3");
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("X-Header-1")).toBe("value1");
+      expect(response.headers.get("X-Header-2")).toBe("value2");
+      expect(response.headers.get("X-Header-3")).toBe("value3");
+    });
+
+    it("should use last declared value when header is set multiple times", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Custom", "first");
+      ctx.res.header("X-Custom", "second");
+      ctx.res.header("X-Custom", "third");
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("X-Custom")).toBe("third");
+    });
+
+    it("should convert non-string values to strings", async () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.header("X-Number", 123);
+      ctx.res.header("X-Boolean", true);
+      ctx.res.header("X-Null", null);
+      const response = ctx.res.json({ test: true });
+
+      expect(response.headers.get("X-Number")).toBe("123");
+      expect(response.headers.get("X-Boolean")).toBe("true");
+      expect(response.headers.get("X-Null")).toBe("null");
+    });
+
+    it("should not affect responses from different contexts", async () => {
+      const req1 = new Request("http://localhost/1");
+      const ctx1 = new IvyContext(req1);
+      ctx1.res.header("X-Context", "context1");
+
+      const req2 = new Request("http://localhost/2");
+      const ctx2 = new IvyContext(req2);
+      ctx2.res.header("X-Context", "context2");
+
+      const response1 = ctx1.res.text("Hello 1");
+      const response2 = ctx2.res.text("Hello 2");
+
+      expect(response1.headers.get("X-Context")).toBe("context1");
+      expect(response2.headers.get("X-Context")).toBe("context2");
+    });
+  });
+
   describe("req.cookie()", () => {
     it("should return specific cookie value", () => {
       const req = new Request("http://localhost/", {
