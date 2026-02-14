@@ -1,9 +1,9 @@
 > [!IMPORTANT]
 > This document is a work in progress. Do not use and/or refer.
 
-# Ivy Request Lifecycle
+# Vixy Request Lifecycle
 
-The Ivy request lifecycle outlines the various stages a request goes through from initiation to completion.
+The Vixy request lifecycle outlines the various stages a request goes through from initiation to completion.
 
 ```
  [Incoming Request]
@@ -58,7 +58,7 @@ Listed in the proper execution order
 `onRequest`
 
 ```ts
-onRequest(c: IvyRequest, next: Next) => void;
+onRequest(c: VixyRequest, next: Next) => void;
 ```
 
 - Invoked at the very beginning of the request
@@ -71,7 +71,7 @@ onRequest(c: IvyRequest, next: Next) => void;
 `onPreParsing`
 
 ```ts
-onPreParsing(c: IvyRequest, next: Next<T>) => void;
+onPreParsing(c: VixyRequest, next: Next<T>) => void;
 ```
 
 - Invoked before the request payload is parsed
@@ -85,7 +85,7 @@ onPreParsing(c: IvyRequest, next: Next<T>) => void;
 `onPreValidation`
 
 ```ts
-onPreValidation(c: IvyRequest, next: Next) => void;
+onPreValidation(c: VixyRequest, next: Next) => void;
 ```
 
 - Invoked after body parsing but before validation
@@ -98,7 +98,7 @@ onPreValidation(c: IvyRequest, next: Next) => void;
 `onPreHandler`
 
 ```ts
-onPreHandler(c: IvyRequest, next: Next) => void;
+onPreHandler(c: VixyRequest, next: Next) => void;
 ```
 
 - Invoked after validation but before the route handler
@@ -111,7 +111,7 @@ onPreHandler(c: IvyRequest, next: Next) => void;
 `onPreSerialization` (optionally invoked)
 
 ```ts
-onPreSerialization(c: IvyRequest, next: Next<T>) => void;
+onPreSerialization(c: VixyRequest, next: Next<T>) => void;
 ```
 
 - Invoked after route handler but before the response payload is serialized
@@ -125,7 +125,7 @@ onPreSerialization(c: IvyRequest, next: Next<T>) => void;
 `onSend`
 
 ```ts
-onSend(c: IvyRequest, next: Next<T>) => void;
+onSend(c: VixyRequest, next: Next<T>) => void;
 ```
 
 - Invoked before the response is sent to the client and after serialization
@@ -137,7 +137,7 @@ onSend(c: IvyRequest, next: Next<T>) => void;
 `onResponse`
 
 ```ts
-onSend(c: IvyRequest, next: Next) => void;
+onSend(c: VixyRequest, next: Next) => void;
 ```
 
 - Invoked after the response has been sent to the client
@@ -167,10 +167,10 @@ type Next<T = any> = (err?: Error, payload?: T) => void;
 
 1. Global
 
-Will apply to all requests, routes, and `Ivy` instances under the same `Ivy` instances.
+Will apply to all requests, routes, and `Vixy` instances under the same `Vixy` instances.
 
 ```ts
-const app = new Ivy();
+const app = new Vixy();
 
 app.onRequest((request, response, next) => {
   // global onRequest logic

@@ -1,6 +1,6 @@
-import Ivy from "../../src/index";
+import Vixy from "../../src/index";
 
-const app = new Ivy();
+const app = new Vixy();
 
 app.use("*", async (c, next) => {
   c.req.setContext("startTime", Date.now());
@@ -43,10 +43,10 @@ app.get("/about", (c) => {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Hello Ivy!</title>
+        <title>Hello Vixy!</title>
       </head>
       <body>
-        <p>This is a response from Ivy!</p>
+        <p>This is a response from Vixy!</p>
       </body>
     </html>
   `);

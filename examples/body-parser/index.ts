@@ -1,6 +1,6 @@
-import Ivy from "../../src";
+import Vixy from "../../src";
 
-const app = new Ivy();
+const app = new Vixy();
 
 // JSON body parsing
 app.post("/api/json", async (c) => {

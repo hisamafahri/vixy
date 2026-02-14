@@ -1,18 +1,18 @@
 # Middleware Specification
 
-Middleware are functions that run _before_ the route handler is executed. There are two types of middleware supported in Ivy:
+Middleware are functions that run _before_ the route handler is executed. There are two types of middleware supported in Vixy:
 
 - Global Middleware: Applied to all routes under the same instance
 - Route-specific Middleware: Applied only to specific routes
 
 ### Global Middleware
 
-Use the `.use()` method on the Ivy instance to register global middleware. This middleware will run for every incoming request before reaching the route handler.
+Use the `.use()` method on the Vixy instance to register global middleware. This middleware will run for every incoming request before reaching the route handler.
 
 ```ts
-import Ivy from "ivy";
+import Vixy from "ivixyy";
 
-const app = new Ivy();
+const app = new Vixy();
 
 app.use("*", async (c, next) => {
   await next(); // Proceed to the next middleware or route handler
@@ -106,14 +106,14 @@ Middleware functions have the following type signature:
 
 ```ts
 type Middleware = (
-  c: IvyContext,
+  c: VixyContext,
   next: () => Promise<void>,
 ) => Promise<Response | void>;
 ```
 
 **Parameters:**
 
-- `c`: The `IvyContext` object containing request and response helpers
+- `c`: The `VixyContext` object containing request and response helpers
 - `next`: A function to call the next middleware or route handler in the chain
 
 **Return type:**

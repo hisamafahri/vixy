@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { IvyContext } from "./context";
-import Ivy, { type Next } from "./index";
+import type { VixyContext } from "./context";
+import Vixy, { type Next } from "./index";
 
 describe("Middleware", () => {
   describe("global middleware", () => {
     it("should execute global middleware for all routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -25,7 +25,7 @@ describe("Middleware", () => {
     });
 
     it("should execute multiple global middleware in order", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -66,7 +66,7 @@ describe("Middleware", () => {
     });
 
     it("should support path-specific global middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -91,7 +91,7 @@ describe("Middleware", () => {
     });
 
     it("should not execute non-matching path middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("/api/*", async (c, next) => {
@@ -111,7 +111,7 @@ describe("Middleware", () => {
     });
 
     it("should short-circuit on middleware without next()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next): Promise<Response | void> => {
@@ -136,7 +136,7 @@ describe("Middleware", () => {
     });
 
     it("should allow middleware to modify context", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.use("*", async (c, next) => {
         await next();
@@ -158,11 +158,11 @@ describe("Middleware", () => {
 
   describe("route-specific middleware", () => {
     it("should execute route-specific middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       const authMiddleware = async (
-        c: IvyContext,
+        c: VixyContext,
         next: Next,
       ): Promise<void> => {
         execution.push("auth");
@@ -181,10 +181,10 @@ describe("Middleware", () => {
     });
 
     it("should work with .on() method", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const authMiddleware = async (c: IvyContext, next: Next) => {
+      const authMiddleware = async (c: VixyContext, next: Next) => {
         execution.push("auth");
         await next();
       };
@@ -200,10 +200,10 @@ describe("Middleware", () => {
     });
 
     it("should short-circuit route middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const authMiddleware = async (c: IvyContext, next: Next) => {
+      const authMiddleware = async (c: VixyContext, next: Next) => {
         execution.push("auth");
         const token = c.req.header("Authorization");
         if (!token) {
@@ -228,7 +228,7 @@ describe("Middleware", () => {
 
   describe("combined global and route-specific middleware", () => {
     it("should execute global before route-specific middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -236,7 +236,7 @@ describe("Middleware", () => {
         await next();
       });
 
-      const routeMiddleware = async (c: IvyContext, next: Next) => {
+      const routeMiddleware = async (c: VixyContext, next: Next) => {
         execution.push("route");
         await next();
       };
@@ -253,7 +253,7 @@ describe("Middleware", () => {
     });
 
     it("should short-circuit from global middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -261,7 +261,7 @@ describe("Middleware", () => {
         return c.res.text("Blocked", 403);
       });
 
-      const routeMw = async (c: IvyContext, next: Next) => {
+      const routeMw = async (c: VixyContext, next: Next) => {
         execution.push("route");
         await next();
       };
@@ -280,7 +280,7 @@ describe("Middleware", () => {
     });
 
     it("should short-circuit from route middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -288,7 +288,7 @@ describe("Middleware", () => {
         await next();
       });
 
-      const routeMw = async (c: IvyContext, next: Next) => {
+      const routeMw = async (c: VixyContext, next: Next) => {
         execution.push("route");
         return c.res.text("Blocked", 403);
       };
@@ -309,10 +309,10 @@ describe("Middleware", () => {
 
   describe("middleware with different HTTP methods", () => {
     it("should work with POST routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         execution.push("middleware");
         await next();
       };
@@ -329,10 +329,10 @@ describe("Middleware", () => {
     });
 
     it("should work with PUT routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         execution.push("middleware");
         await next();
       };
@@ -351,10 +351,10 @@ describe("Middleware", () => {
     });
 
     it("should work with DELETE routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         execution.push("middleware");
         await next();
       };
@@ -373,10 +373,10 @@ describe("Middleware", () => {
     });
 
     it("should work with PATCH routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         execution.push("middleware");
         await next();
       };
@@ -395,10 +395,10 @@ describe("Middleware", () => {
     });
 
     it("should work with OPTIONS routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const execution: string[] = [];
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         execution.push("middleware");
         await next();
       };
@@ -419,10 +419,10 @@ describe("Middleware", () => {
 
   describe("middleware with path parameters", () => {
     it("should have access to path parameters", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       let capturedId: string | undefined;
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         capturedId = c.req.param("id");
         await next();
       };
@@ -439,10 +439,10 @@ describe("Middleware", () => {
     });
 
     it("should have access to query parameters", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       let capturedQuery: string | undefined;
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         capturedQuery = c.req.query("page");
         await next();
       };
@@ -460,10 +460,10 @@ describe("Middleware", () => {
     });
 
     it("should have access to request headers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       let capturedHeader: string | undefined;
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         capturedHeader = c.req.header("Authorization");
         await next();
       };
@@ -484,10 +484,10 @@ describe("Middleware", () => {
 
   describe("middleware with request body", () => {
     it("should have access to JSON body", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       let capturedBody: unknown;
 
-      const middleware = async (c: IvyContext, next: Next) => {
+      const middleware = async (c: VixyContext, next: Next) => {
         capturedBody = await c.req.json();
         await next();
       };
@@ -511,7 +511,7 @@ describe("Middleware", () => {
 
   describe("middleware error handling", () => {
     it("should return 500 if middleware throws", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.use("*", async (c, next) => {
         throw new Error("Middleware error");
@@ -530,7 +530,7 @@ describe("Middleware", () => {
 
   describe("middleware method chaining", () => {
     it("should support method chaining with .use()", () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       const result = app
         .use("*", async (c, next) => {
@@ -547,9 +547,9 @@ describe("Middleware", () => {
 
   describe("real-world middleware scenarios", () => {
     it("should implement authentication middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
-      const authMiddleware = async (c: IvyContext, next: Next) => {
+      const authMiddleware = async (c: VixyContext, next: Next) => {
         const token = c.req.header("Authorization");
         if (!token || token !== "Bearer valid-token") {
           return c.res.json({ error: "Unauthorized" }, 401);
@@ -587,7 +587,7 @@ describe("Middleware", () => {
     });
 
     it("should implement logging middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       const logs: string[] = [];
 
       app.use("*", async (c, next) => {
@@ -607,9 +607,9 @@ describe("Middleware", () => {
     });
 
     it("should implement CORS middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
-      const corsMiddleware = async (c: IvyContext, next: Next) => {
+      const corsMiddleware = async (c: VixyContext, next: Next) => {
         await next();
       };
 
@@ -631,9 +631,9 @@ describe("Middleware", () => {
     });
 
     it("should implement request validation middleware", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
-      const validateJson = async (c: IvyContext, next: Next) => {
+      const validateJson = async (c: VixyContext, next: Next) => {
         const contentType = c.req.header("Content-Type");
         if (!contentType || !contentType.includes("application/json")) {
           return c.res.json(

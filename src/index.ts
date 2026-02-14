@@ -1,13 +1,13 @@
 import FindMyWay from "find-my-way";
-import { IvyContext } from "./context";
+import { VixyContext } from "./context";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
 
-type Handler = (c: IvyContext) => Response | Promise<Response>;
+type Handler = (c: VixyContext) => Response | Promise<Response>;
 
 export type Next = () => Promise<void>;
 
-type Middleware = (c: IvyContext, next: Next) => Promise<Response | void>;
+type Middleware = (c: VixyContext, next: Next) => Promise<Response | void>;
 
 interface RouteStore {
   handler: Handler;
@@ -20,7 +20,7 @@ interface MiddlewareEntry {
   middleware: Middleware;
 }
 
-export default class Ivy {
+export default class Vixy {
   private router: FindMyWay.Instance<FindMyWay.HTTPVersion.V1>;
   private notFoundHandler?: Handler;
   private globalMiddleware: MiddlewareEntry[] = [];
@@ -63,7 +63,7 @@ export default class Ivy {
   }
 
   private async executeMiddlewareChain(
-    context: IvyContext,
+    context: VixyContext,
     middlewares: Middleware[],
     finalHandler: Handler,
   ): Promise<Response> {
@@ -229,7 +229,7 @@ export default class Ivy {
         }
       }
 
-      const context = new IvyContext(req, params, path);
+      const context = new VixyContext(req, params, path);
 
       const globalMiddlewares: Middleware[] = [];
       for (const entry of this.globalMiddleware) {
@@ -244,7 +244,7 @@ export default class Ivy {
     }
 
     if (this.notFoundHandler) {
-      const context = new IvyContext(req, {}, pathname);
+      const context = new VixyContext(req, {}, pathname);
       return await this.notFoundHandler(context);
     }
 

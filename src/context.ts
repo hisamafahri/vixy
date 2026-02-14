@@ -4,7 +4,7 @@ import type {
   RedirectStatusCode,
 } from "./lib/status-code";
 
-export interface IvyRequest {
+export interface VixyRequest {
   raw: Request;
   param: (name: string) => string | undefined;
   params: Record<string, string>;
@@ -40,7 +40,7 @@ export interface CookieOptions {
   sameSite?: "Strict" | "Lax" | "None";
 }
 
-export interface IvyResponse {
+export interface VixyResponse {
   // TODO:
   // - send file/blob
   // - send stream?
@@ -53,9 +53,9 @@ export interface IvyResponse {
   redirect: (location: string, status?: RedirectStatusCode) => Response;
 }
 
-export class IvyContext {
-  req: IvyRequest;
-  res: IvyResponse;
+export class VixyContext {
+  req: VixyRequest;
+  res: VixyResponse;
   private bodyCache: ArrayBuffer | null = null;
   private customHeaders: Record<string, string> = {};
   private contextStore: Record<string, any> = {};

@@ -1,6 +1,6 @@
-# Agent Guidelines for Ivy
+# Agent Guidelines for Vixy
 
-Ivy is a lightweight web framework for Bun runtime with Express-like API for routing, path/query parameters, wildcards, and multiple HTTP methods.
+Vixy is a lightweight web framework for Bun runtime with Express-like API for routing, path/query parameters, wildcards, and multiple HTTP methods.
 
 ## Build & Test Commands
 
@@ -54,7 +54,7 @@ bun run examples/basic/index.ts
 
 ```typescript
 import FindMyWay from "find-my-way";
-import { IvyContext } from "./context";
+import { VixyContext } from "./context";
 import type { ContentfulStatusCode } from "./lib/status-code";
 ```
 
@@ -72,13 +72,13 @@ interface RouteStore {
 }
 
 type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS";
-type Handler = (c: IvyContext) => Response | Promise<Response>;
+type Handler = (c: VixyContext) => Response | Promise<Response>;
 ```
 
 ### Naming Conventions
 
-- Classes: PascalCase (`Ivy`, `IvyContext`)
-- Interfaces: PascalCase, no `I` prefix (`IvyRequest`, `RouteStore`)
+- Classes: PascalCase (`Vixy`, `VixyContext`)
+- Interfaces: PascalCase, no `I` prefix (`VixyRequest`, `RouteStore`)
 - Types: PascalCase (`Method`, `Handler`)
 - Functions/Methods: camelCase (`fetch`, `convertWildcardPath`)
 - Variables: camelCase (`router`, `params`)
@@ -118,10 +118,10 @@ app.get("/").post("/").put("/");
 - Test both success and error cases
 
 ```typescript
-describe("Ivy", () => {
+describe("Vixy", () => {
   describe("route registration", () => {
     it("should register GET routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
       app.get("/test", (c) => c.res.text("GET response"));
 
       const req = new Request("http://localhost/test", { method: "GET" });

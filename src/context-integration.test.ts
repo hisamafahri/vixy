@@ -1,11 +1,11 @@
 // @ts-nocheck - Test file with intentional unknown types from JSON parsing
 import { describe, expect, it } from "vitest";
-import type { IvyContext } from "./context";
-import Ivy, { type Next } from "./index";
+import type { VixyContext } from "./context";
+import Vixy, { type Next } from "./index";
 
 describe("Context integration with middleware", () => {
   it("should set context in middleware and access in handler", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       c.req.setContext("email", "user@example.com");
@@ -25,7 +25,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should pass context through multiple middleware layers", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       c.req.setContext("step1", "first");
@@ -63,7 +63,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should store user authentication data in context", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface User {
       id: number;
@@ -71,7 +71,7 @@ describe("Context integration with middleware", () => {
       role: string;
     }
 
-    const authMiddleware = async (c: IvyContext, next: Next) => {
+    const authMiddleware = async (c: VixyContext, next: Next) => {
       const token = c.req.header("Authorization");
       if (!token) {
         return c.res.json({ error: "No token" }, 401);
@@ -110,7 +110,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should allow middleware to override context values", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       c.req.setContext("value", "first");
@@ -135,7 +135,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should isolate context between different requests", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
     const receivedIds: number[] = [];
 
     app.use("*", async (c, next) => {
@@ -172,7 +172,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should handle complex objects in context", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface RequestMetadata {
       timestamp: Date;
@@ -214,9 +214,9 @@ describe("Context integration with middleware", () => {
   });
 
   it("should work with route-specific middleware", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
-    const routeMiddleware = async (c: IvyContext, next: Next) => {
+    const routeMiddleware = async (c: VixyContext, next: Next) => {
       c.req.setContext("routeData", "from-route-middleware");
       await next();
     };
@@ -241,7 +241,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should return undefined for context keys that were never set", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.get("/test", (c) => {
       const nonExistent = c.req.getContext("nonExistent");
@@ -256,7 +256,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should handle context in authentication and authorization flow", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface User {
       id: number;
@@ -264,7 +264,7 @@ describe("Context integration with middleware", () => {
     }
 
     // Authentication middleware
-    const authenticate = async (c: IvyContext, next: Next) => {
+    const authenticate = async (c: VixyContext, next: Next) => {
       const token = c.req.header("Authorization");
       if (!token) {
         return c.res.json({ error: "Not authenticated" }, 401);
@@ -276,7 +276,7 @@ describe("Context integration with middleware", () => {
     };
 
     // Authorization middleware
-    const requireAdmin = async (c: IvyContext, next: Next) => {
+    const requireAdmin = async (c: VixyContext, next: Next) => {
       const user = c.req.getContext<User>("user");
       if (!user || user.role !== "admin") {
         return c.res.json({ error: "Forbidden" }, 403);
@@ -326,7 +326,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should preserve context when middleware throws after setting it", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
     let contextValue: string | undefined;
 
     app.use("*", async (c, next) => {
@@ -344,7 +344,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should handle performance tracking across middleware", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface PerformanceData {
       startTime: number;
@@ -395,7 +395,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should handle multiple independent context keys", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       c.req.setContext("userId", 123);
@@ -423,7 +423,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should handle context with async operations in middleware", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       // Simulate async operation
@@ -445,7 +445,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should work with different HTTP methods", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     app.use("*", async (c, next) => {
       c.req.setContext("method", c.req.raw.method);
@@ -465,7 +465,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should allow context modification by reference", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface Counter {
       count: number;
@@ -505,7 +505,7 @@ describe("Context integration with middleware", () => {
   });
 
   it("should support context-based rate limiting pattern", async () => {
-    const app = new Ivy();
+    const app = new Vixy();
 
     interface RateLimitData {
       requestCount: number;

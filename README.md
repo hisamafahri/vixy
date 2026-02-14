@@ -1,4 +1,4 @@
-# ivy
+# vixy
 
 To install dependencies:
 

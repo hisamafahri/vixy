@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import Ivy from "./index";
+import Vixy from "./index";
 
-describe("Ivy", () => {
+describe("Vixy", () => {
   describe("route registration", () => {
     it("should register GET routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => c.res.text("GET response"));
 
@@ -16,7 +16,7 @@ describe("Ivy", () => {
     });
 
     it("should register POST routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/test", (c) => c.res.text("POST response"));
 
@@ -28,7 +28,7 @@ describe("Ivy", () => {
     });
 
     it("should register PUT routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.put("/test", (c) => c.res.text("PUT response"));
 
@@ -40,7 +40,7 @@ describe("Ivy", () => {
     });
 
     it("should register DELETE routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.delete("/test", (c) => c.res.text("DELETE response"));
 
@@ -52,7 +52,7 @@ describe("Ivy", () => {
     });
 
     it("should register PATCH routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.patch("/test", (c) => c.res.text("PATCH response"));
 
@@ -64,7 +64,7 @@ describe("Ivy", () => {
     });
 
     it("should register OPTIONS routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.options("/test", (c) => c.res.text("OPTIONS response"));
 
@@ -76,7 +76,7 @@ describe("Ivy", () => {
     });
 
     it("should support method chaining", () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       const result = app
         .get("/one", (c) => c.res.text("One"))
@@ -89,7 +89,7 @@ describe("Ivy", () => {
 
   describe(".on() method", () => {
     it("should register a single method with single path", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.on("GET", "/test", (c) => c.res.text("GET response"));
 
@@ -101,7 +101,7 @@ describe("Ivy", () => {
     });
 
     it("should register multiple methods with single path", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.on(["GET", "POST"], "/test", (c) =>
         c.res.text("Multi-method response"),
@@ -117,7 +117,7 @@ describe("Ivy", () => {
     });
 
     it("should register single method with multiple paths", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.on("GET", ["/test1", "/test2"], (c) =>
         c.res.text("Multi-path response"),
@@ -133,7 +133,7 @@ describe("Ivy", () => {
     });
 
     it("should register multiple methods with multiple paths", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.on(["GET", "POST"], ["/api/v1", "/api/v2"], (c) =>
         c.res.text("Multi response"),
@@ -156,7 +156,7 @@ describe("Ivy", () => {
     });
 
     it("should support method chaining", () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       const result = app
         .on("GET", "/one", (c) => c.res.text("One"))
@@ -166,7 +166,7 @@ describe("Ivy", () => {
     });
 
     it("should work alongside other method helpers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/get-route", (c) => c.res.text("GET helper"));
       app.on("POST", "/post-route", (c) => c.res.text("POST on method"));
@@ -187,7 +187,7 @@ describe("Ivy", () => {
 
   describe("routing", () => {
     it("should route requests to correct handler", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/", (c) => c.res.text("Home"));
       app.get("/about", (c) => c.res.text("About"));
@@ -202,7 +202,7 @@ describe("Ivy", () => {
     });
 
     it("should differentiate between HTTP methods", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/resource", (c) => c.res.text("GET resource"));
       app.post("/resource", (c) => c.res.text("POST resource"));
@@ -221,7 +221,7 @@ describe("Ivy", () => {
     });
 
     it("should return 404 for unmatched routes", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/exists", (c) => c.res.text("Found"));
 
@@ -233,7 +233,7 @@ describe("Ivy", () => {
     });
 
     it("should return 404 for unmatched HTTP methods", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => c.res.text("GET only"));
 
@@ -246,7 +246,7 @@ describe("Ivy", () => {
 
   describe("handler context", () => {
     it("should pass raw request to context", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => {
         return c.res.text(c.req.raw.url);
@@ -259,7 +259,7 @@ describe("Ivy", () => {
     });
 
     it("should provide access to raw request properties", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/method", (c) => {
         return c.res.text(c.req.raw.method);
@@ -272,7 +272,7 @@ describe("Ivy", () => {
     });
 
     it("should support JSON responses", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/json", (c) => c.res.json({ message: "Hello" }));
 
@@ -284,7 +284,7 @@ describe("Ivy", () => {
     });
 
     it("should support HTML responses", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/html", (c) => c.res.html("<h1>Title</h1>"));
 
@@ -296,7 +296,7 @@ describe("Ivy", () => {
     });
 
     it("should support null responses with default status 204", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.delete("/resource/:id", (c) => c.res.null());
 
@@ -311,7 +311,7 @@ describe("Ivy", () => {
     });
 
     it("should support null responses with custom status", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.put("/cache/:key", (c) => c.res.null(304));
 
@@ -325,7 +325,7 @@ describe("Ivy", () => {
     });
 
     it("should support null response with 205 Reset Content", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/form/reset", (c) => c.res.null(205));
 
@@ -341,7 +341,7 @@ describe("Ivy", () => {
 
   describe("async handlers", () => {
     it("should support async handlers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/async", async (c) => {
         await new Promise((resolve) => setTimeout(resolve, 10));
@@ -357,7 +357,7 @@ describe("Ivy", () => {
 
   describe("wildcard paths", () => {
     it("should match wildcard in middle of path", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/wild/*/card", (c) => c.res.text("GET /wild/*/card"));
 
@@ -371,7 +371,7 @@ describe("Ivy", () => {
     });
 
     it("should match wildcard with different values", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/files/*/download", (c) => c.res.text("Download"));
 
@@ -389,7 +389,7 @@ describe("Ivy", () => {
     });
 
     it("should match multiple wildcards", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/api/*/users/*/profile", (c) => c.res.text("Profile"));
 
@@ -403,7 +403,7 @@ describe("Ivy", () => {
     });
 
     it("should not match incorrect wildcard paths", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/wild/*/card", (c) => c.res.text("Match"));
 
@@ -416,7 +416,7 @@ describe("Ivy", () => {
 
   describe("path params", () => {
     it("should extract single path param", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/user/:name", (c) => {
         const name = c.req.param("name");
@@ -431,7 +431,7 @@ describe("Ivy", () => {
     });
 
     it("should extract multiple path params", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/users/:userId/posts/:postId", (c) => {
         const userId = c.req.param("userId");
@@ -449,7 +449,7 @@ describe("Ivy", () => {
     });
 
     it("should handle params with different values", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/product/:id", (c) => {
         const id = c.req.param("id");
@@ -470,7 +470,7 @@ describe("Ivy", () => {
     });
 
     it("should return undefined for non-existent param", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test/:id", (c) => {
         const nonExistent = c.req.param("name");
@@ -486,7 +486,7 @@ describe("Ivy", () => {
     });
 
     it("should work with POST requests", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/:version/users", (c) => {
         const version = c.req.param("version");
@@ -505,7 +505,7 @@ describe("Ivy", () => {
     });
 
     it("should combine with .on() method", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.on(["GET", "POST"], "/resource/:id", (c) => {
         const id = c.req.param("id");
@@ -526,7 +526,7 @@ describe("Ivy", () => {
     });
 
     it("should allow accessing params via req.params object", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/user/:id/profile/:section", (c) => {
         return c.res.json({
@@ -546,7 +546,7 @@ describe("Ivy", () => {
 
   describe("query parameters", () => {
     it("should access single query parameter", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/search", (c) => {
         const q = c.req.query("q");
@@ -562,7 +562,7 @@ describe("Ivy", () => {
     });
 
     it("should access all query parameters at once", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/search", (c) => {
         const { q, limit, offset } = c.req.query();
@@ -583,7 +583,7 @@ describe("Ivy", () => {
     });
 
     it("should get multiple values with queries()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/filter", (c) => {
         const tags = c.req.queries("tags");
@@ -599,7 +599,7 @@ describe("Ivy", () => {
     });
 
     it("should combine path params and query params", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/users/:id", (c) => {
         const id = c.req.param("id");
@@ -616,7 +616,7 @@ describe("Ivy", () => {
     });
 
     it("should handle URL-encoded query parameters", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/search", (c) => {
         const q = c.req.query("q");
@@ -634,7 +634,7 @@ describe("Ivy", () => {
 
   describe("request metadata", () => {
     it("should provide req.pathname", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/users/:id", (c) => {
         return c.res.json({ pathname: c.req.pathname });
@@ -649,7 +649,7 @@ describe("Ivy", () => {
     });
 
     it("should provide req.href with full URL", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => {
         return c.res.json({ href: c.req.href });
@@ -666,7 +666,7 @@ describe("Ivy", () => {
     });
 
     it("should provide req.routePathname with defined route pattern", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/users/:userId", (c) => {
         return c.res.json({
@@ -689,7 +689,7 @@ describe("Ivy", () => {
     });
 
     it("should handle wildcard in routePathname", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/files/*/download", (c) => {
         return c.res.json({
@@ -710,7 +710,7 @@ describe("Ivy", () => {
     });
 
     it("should provide all metadata together", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/api/:version/users/:id", (c) => {
         return c.res.json({
@@ -742,7 +742,7 @@ describe("Ivy", () => {
 
   describe("request body parsers", () => {
     it("should parse JSON body with req.json()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/data", async (c) => {
         const body = await c.req.json();
@@ -762,7 +762,7 @@ describe("Ivy", () => {
     });
 
     it("should parse text body with req.text()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/echo", async (c) => {
         const body = await c.req.text();
@@ -780,7 +780,7 @@ describe("Ivy", () => {
     });
 
     it("should parse form data with req.formData()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/form", async (c) => {
         const formData = await c.req.formData();
@@ -806,7 +806,7 @@ describe("Ivy", () => {
     });
 
     it("should parse array buffer with req.arrayBuffer()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/binary", async (c) => {
         const buffer = await c.req.arrayBuffer();
@@ -824,7 +824,7 @@ describe("Ivy", () => {
     });
 
     it("should parse blob with req.blob()", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/blob", async (c) => {
         const blob = await c.req.blob();
@@ -844,7 +844,7 @@ describe("Ivy", () => {
     });
 
     it("should allow multiple body parser calls without 'Body already used' error", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/multi", async (c) => {
         const text1 = await c.req.text();
@@ -866,7 +866,7 @@ describe("Ivy", () => {
     });
 
     it("should allow accessing raw request after using body parser", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/test", async (c) => {
         const body = await c.req.json();
@@ -888,7 +888,7 @@ describe("Ivy", () => {
     });
 
     it("should cache body and allow different parser methods", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/mixed", async (c) => {
         const json = await c.req.json();
@@ -921,7 +921,7 @@ describe("Ivy", () => {
     });
 
     it("should handle empty body", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/api/empty", async (c) => {
         const text = await c.req.text();
@@ -940,7 +940,7 @@ describe("Ivy", () => {
 
   describe("request headers", () => {
     it("should access single header by name", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => {
         const userAgent = c.req.header("User-Agent");
@@ -957,7 +957,7 @@ describe("Ivy", () => {
     });
 
     it("should return undefined for non-existent header", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => {
         const header = c.req.header("X-Custom-Header");
@@ -971,7 +971,7 @@ describe("Ivy", () => {
     });
 
     it("should handle case-insensitive header names", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => {
         const contentType1 = c.req.header("Content-Type");
@@ -998,7 +998,7 @@ describe("Ivy", () => {
     });
 
     it("should access multiple different headers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/api", (c) => {
         const userAgent = c.req.header("User-Agent");
@@ -1025,7 +1025,7 @@ describe("Ivy", () => {
     });
 
     it("should work with custom headers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.post("/webhook", (c) => {
         const signature = c.req.header("X-Webhook-Signature");
@@ -1049,7 +1049,7 @@ describe("Ivy", () => {
     });
 
     it("should combine headers with path params and query params", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/users/:id", (c) => {
         const id = c.req.param("id");
@@ -1074,7 +1074,7 @@ describe("Ivy", () => {
 
   describe("notFound handler", () => {
     it("should use custom notFound handler when route not found", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/exists", (c) => c.res.text("Found"));
       app.notFound((c) => c.res.text("Custom Not Found", 404));
@@ -1087,7 +1087,7 @@ describe("Ivy", () => {
     });
 
     it("should use custom notFound handler for unmatched HTTP methods", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/test", (c) => c.res.text("GET only"));
       app.notFound((c) => c.res.json({ error: "Route not found" }, 404));
@@ -1100,7 +1100,7 @@ describe("Ivy", () => {
     });
 
     it("should provide context with request info to notFound handler", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.notFound((c) => {
         return c.res.json({
@@ -1121,7 +1121,7 @@ describe("Ivy", () => {
     });
 
     it("should allow notFound handler to access query parameters", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.notFound((c) => {
         const debug = c.req.query("debug");
@@ -1140,7 +1140,7 @@ describe("Ivy", () => {
     });
 
     it("should allow notFound handler to access headers", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.notFound((c) => {
         const accept = c.req.header("Accept");
@@ -1157,7 +1157,7 @@ describe("Ivy", () => {
     });
 
     it("should support async notFound handler", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.notFound(async (c) => {
         await new Promise((resolve) => setTimeout(resolve, 10));
@@ -1173,7 +1173,7 @@ describe("Ivy", () => {
     });
 
     it("should support method chaining with notFound", () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       const result = app
         .get("/one", (c) => c.res.text("One"))
@@ -1184,7 +1184,7 @@ describe("Ivy", () => {
     });
 
     it("should use default 404 response when no notFound handler is set", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/exists", (c) => c.res.text("Found"));
 
@@ -1196,7 +1196,7 @@ describe("Ivy", () => {
     });
 
     it("should allow custom status codes in notFound handler", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.notFound((c) => c.res.json({ error: "Gone" }, 410));
 
@@ -1208,7 +1208,7 @@ describe("Ivy", () => {
     });
 
     it("should handle notFound for different HTTP methods", async () => {
-      const app = new Ivy();
+      const app = new Vixy();
 
       app.get("/api", (c) => c.res.text("API"));
       app.notFound((c) =>

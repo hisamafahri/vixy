@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { IvyContext } from "./context";
+import { VixyContext } from "./context";
 
-describe("IvyContext", () => {
+describe("VixyContext", () => {
   describe("res.text()", () => {
     it("should return text response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.text("Hello World");
 
@@ -16,7 +16,7 @@ describe("IvyContext", () => {
 
     it("should return text response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.text("Created", 201);
 
@@ -28,7 +28,7 @@ describe("IvyContext", () => {
   describe("res.json()", () => {
     it("should return JSON response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const data = { message: "Hello JSON" };
 
       const response = ctx.res.json(data);
@@ -40,7 +40,7 @@ describe("IvyContext", () => {
 
     it("should return JSON response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const data = { error: "Not Found" };
 
       const response = ctx.res.json(data, 404);
@@ -51,7 +51,7 @@ describe("IvyContext", () => {
 
     it("should handle array data", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const data = [1, 2, 3];
 
       const response = ctx.res.json(data);
@@ -63,7 +63,7 @@ describe("IvyContext", () => {
   describe("res.html()", () => {
     it("should return HTML response with default status 200", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const html = "<h1>Hello HTML</h1>";
 
       const response = ctx.res.html(html);
@@ -75,7 +75,7 @@ describe("IvyContext", () => {
 
     it("should return HTML response with custom status", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const html = "<h1>Server Error</h1>";
 
       const response = ctx.res.html(html, 500);
@@ -88,7 +88,7 @@ describe("IvyContext", () => {
   describe("res.null()", () => {
     it("should return null response with default status 204", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.null();
 
@@ -98,7 +98,7 @@ describe("IvyContext", () => {
 
     it("should return null response with custom status 204", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.null(204);
 
@@ -108,7 +108,7 @@ describe("IvyContext", () => {
 
     it("should return null response with status 205", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.null(205);
 
@@ -118,7 +118,7 @@ describe("IvyContext", () => {
 
     it("should return null response with status 304", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.null(304);
 
@@ -128,7 +128,7 @@ describe("IvyContext", () => {
 
     it("should not have Content-Type header", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.null();
 
@@ -139,7 +139,7 @@ describe("IvyContext", () => {
   describe("constructor", () => {
     it("should store the raw request object", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.raw).toBe(req);
       expect(ctx.req.raw.url).toBe("http://localhost/test");
@@ -148,7 +148,7 @@ describe("IvyContext", () => {
     it("should store params when provided", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123", name: "john" };
-      const ctx = new IvyContext(req, params);
+      const ctx = new VixyContext(req, params);
 
       expect(ctx.req.param("id")).toBe("123");
       expect(ctx.req.param("name")).toBe("john");
@@ -157,7 +157,7 @@ describe("IvyContext", () => {
 
     it("should initialize with empty params when not provided", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.param("anything")).toBeUndefined();
       expect(ctx.req.params).toEqual({});
@@ -166,7 +166,7 @@ describe("IvyContext", () => {
     it("should provide param method on req object", () => {
       const req = new Request("http://localhost/test");
       const params = { userId: "999" };
-      const ctx = new IvyContext(req, params);
+      const ctx = new VixyContext(req, params);
 
       expect(ctx.req.param("userId")).toBe("999");
       expect(ctx.req.param("nonExistent")).toBeUndefined();
@@ -177,7 +177,7 @@ describe("IvyContext", () => {
     it("should return param value when it exists", () => {
       const req = new Request("http://localhost/test");
       const params = { userId: "456", action: "edit" };
-      const ctx = new IvyContext(req, params);
+      const ctx = new VixyContext(req, params);
 
       expect(ctx.req.param("userId")).toBe("456");
       expect(ctx.req.param("action")).toBe("edit");
@@ -186,14 +186,14 @@ describe("IvyContext", () => {
     it("should return undefined for non-existent param", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123" };
-      const ctx = new IvyContext(req, params);
+      const ctx = new VixyContext(req, params);
 
       expect(ctx.req.param("nonExistent")).toBeUndefined();
     });
 
     it("should return undefined when no params were set", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.param("id")).toBeUndefined();
     });
@@ -203,7 +203,7 @@ describe("IvyContext", () => {
     it("should provide direct access to params object", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123", name: "test" };
-      const ctx = new IvyContext(req, params);
+      const ctx = new VixyContext(req, params);
 
       expect(ctx.req.params.id).toBe("123");
       expect(ctx.req.params.name).toBe("test");
@@ -216,7 +216,7 @@ describe("IvyContext", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.raw.url).toBe("http://localhost/test?foo=bar");
       expect(ctx.req.raw.method).toBe("POST");
@@ -229,7 +229,7 @@ describe("IvyContext", () => {
         body: JSON.stringify({ key: "value" }),
         headers: { "Content-Type": "application/json" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const body = await ctx.req.raw.json();
       expect(body).toEqual({ key: "value" });
@@ -239,7 +239,7 @@ describe("IvyContext", () => {
   describe("req.query()", () => {
     it("should return specific query parameter", () => {
       const req = new Request("http://localhost/search?q=hello&limit=10");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.query("q")).toBe("hello");
       expect(ctx.req.query("limit")).toBe("10");
@@ -247,7 +247,7 @@ describe("IvyContext", () => {
 
     it("should return undefined for non-existent query parameter", () => {
       const req = new Request("http://localhost/search?q=hello");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.query("nonExistent")).toBeUndefined();
     });
@@ -256,7 +256,7 @@ describe("IvyContext", () => {
       const req = new Request(
         "http://localhost/search?q=hello&limit=10&offset=0",
       );
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const allParams = ctx.req.query();
       expect(allParams).toEqual({
@@ -268,7 +268,7 @@ describe("IvyContext", () => {
 
     it("should return empty object when no query parameters", () => {
       const req = new Request("http://localhost/search");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const allParams = ctx.req.query();
       expect(allParams).toEqual({});
@@ -278,7 +278,7 @@ describe("IvyContext", () => {
       const req = new Request(
         "http://localhost/search?q=hello%20world&name=John%20Doe",
       );
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.query("q")).toBe("hello world");
       expect(ctx.req.query("name")).toBe("John Doe");
@@ -286,7 +286,7 @@ describe("IvyContext", () => {
 
     it("should return first value for duplicate query parameters", () => {
       const req = new Request("http://localhost/search?tag=A&tag=B");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.query("tag")).toBe("A");
     });
@@ -295,7 +295,7 @@ describe("IvyContext", () => {
   describe("req.queries()", () => {
     it("should return array of values for multiple query parameters", () => {
       const req = new Request("http://localhost/search?tags=A&tags=B&tags=C");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toEqual(["A", "B", "C"]);
@@ -303,7 +303,7 @@ describe("IvyContext", () => {
 
     it("should return array with single value for single parameter", () => {
       const req = new Request("http://localhost/search?tag=A");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const tags = ctx.req.queries("tag");
       expect(tags).toEqual(["A"]);
@@ -311,7 +311,7 @@ describe("IvyContext", () => {
 
     it("should return undefined for non-existent parameter", () => {
       const req = new Request("http://localhost/search?q=hello");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toBeUndefined();
@@ -321,7 +321,7 @@ describe("IvyContext", () => {
       const req = new Request(
         "http://localhost/search?tags=A&tags=B&colors=red&colors=blue",
       );
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.queries("tags")).toEqual(["A", "B"]);
       expect(ctx.req.queries("colors")).toEqual(["red", "blue"]);
@@ -331,7 +331,7 @@ describe("IvyContext", () => {
       const req = new Request(
         "http://localhost/search?tags=hello%20world&tags=foo%20bar",
       );
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const tags = ctx.req.queries("tags");
       expect(tags).toEqual(["hello world", "foo bar"]);
@@ -343,7 +343,7 @@ describe("IvyContext", () => {
       const req = new Request(
         "http://localhost:8787/users/123?auto=true&format=json",
       );
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.href).toBe(
         "http://localhost:8787/users/123?auto=true&format=json",
@@ -352,7 +352,7 @@ describe("IvyContext", () => {
 
     it("should work with URL without query parameters", () => {
       const req = new Request("http://localhost/users/123");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.href).toBe("http://localhost/users/123");
     });
@@ -361,21 +361,21 @@ describe("IvyContext", () => {
   describe("req.pathname", () => {
     it("should provide pathname of the request", () => {
       const req = new Request("http://localhost/users/123?auto=true");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.pathname).toBe("/users/123");
     });
 
     it("should handle root path", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.pathname).toBe("/");
     });
 
     it("should not include query parameters", () => {
       const req = new Request("http://localhost/search?q=test&limit=10");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.pathname).toBe("/search");
     });
@@ -384,28 +384,28 @@ describe("IvyContext", () => {
   describe("req.routePathname", () => {
     it("should provide the defined route path pattern", () => {
       const req = new Request("http://localhost/users/123");
-      const ctx = new IvyContext(req, { userId: "123" }, "/users/:userId");
+      const ctx = new VixyContext(req, { userId: "123" }, "/users/:userId");
 
       expect(ctx.req.routePathname).toBe("/users/:userId");
     });
 
     it("should work with wildcard routes", () => {
       const req = new Request("http://localhost/files/abc/download");
-      const ctx = new IvyContext(req, {}, "/files/*/download");
+      const ctx = new VixyContext(req, {}, "/files/*/download");
 
       expect(ctx.req.routePathname).toBe("/files/*/download");
     });
 
     it("should be empty string when not provided", () => {
       const req = new Request("http://localhost/test");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.routePathname).toBe("");
     });
 
     it("should handle static routes", () => {
       const req = new Request("http://localhost/about");
-      const ctx = new IvyContext(req, {}, "/about");
+      const ctx = new VixyContext(req, {}, "/about");
 
       expect(ctx.req.routePathname).toBe("/about");
     });
@@ -414,7 +414,7 @@ describe("IvyContext", () => {
   describe("res.header()", () => {
     it("should set custom header on text response", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Custom-Header", "custom-value");
       const response = ctx.res.text("Hello");
@@ -425,7 +425,7 @@ describe("IvyContext", () => {
 
     it("should set custom header on json response", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Request-Id", "12345");
       const response = ctx.res.json({ data: "test" });
@@ -436,7 +436,7 @@ describe("IvyContext", () => {
 
     it("should set custom header on html response", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Frame-Options", "DENY");
       const response = ctx.res.html("<h1>Test</h1>");
@@ -447,7 +447,7 @@ describe("IvyContext", () => {
 
     it("should set custom header on null response", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Custom", "value");
       const response = ctx.res.null();
@@ -457,7 +457,7 @@ describe("IvyContext", () => {
 
     it("should set multiple custom headers", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Header-1", "value1");
       ctx.res.header("X-Header-2", "value2");
@@ -471,7 +471,7 @@ describe("IvyContext", () => {
 
     it("should use last declared value when header is set multiple times", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Custom", "first");
       ctx.res.header("X-Custom", "second");
@@ -483,7 +483,7 @@ describe("IvyContext", () => {
 
     it("should convert non-string values to strings", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Number", 123);
       ctx.res.header("X-Boolean", true);
@@ -497,11 +497,11 @@ describe("IvyContext", () => {
 
     it("should not affect responses from different contexts", async () => {
       const req1 = new Request("http://localhost/1");
-      const ctx1 = new IvyContext(req1);
+      const ctx1 = new VixyContext(req1);
       ctx1.res.header("X-Context", "context1");
 
       const req2 = new Request("http://localhost/2");
-      const ctx2 = new IvyContext(req2);
+      const ctx2 = new VixyContext(req2);
       ctx2.res.header("X-Context", "context2");
 
       const response1 = ctx1.res.text("Hello 1");
@@ -517,7 +517,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123; theme=dark" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("session")).toBe("abc123");
       expect(ctx.req.cookie("theme")).toBe("dark");
@@ -527,7 +527,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("nonExistent")).toBeUndefined();
     });
@@ -536,7 +536,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123; theme=dark; lang=en" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({
@@ -548,7 +548,7 @@ describe("IvyContext", () => {
 
     it("should return empty object when no cookies", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({});
@@ -558,7 +558,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "key1 = value1; key2= value2 ;key3 =value3" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("key1")).toBe("value1");
       expect(ctx.req.cookie("key2")).toBe("value2");
@@ -569,7 +569,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "data=hello%20world; token=Bearer%20abc123" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("data")).toBe("hello%20world");
       expect(ctx.req.cookie("token")).toBe("Bearer%20abc123");
@@ -579,7 +579,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "session=abc123" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("session")).toBe("abc123");
       expect(ctx.req.cookie()).toEqual({ session: "abc123" });
@@ -589,7 +589,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "validCookie=value; malformedCookie; another=test" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const allCookies = ctx.req.cookie();
       expect(allCookies).toEqual({
@@ -603,7 +603,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "empty=; session=abc123" },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("empty")).toBe("");
       expect(ctx.req.cookie("session")).toBe("abc123");
@@ -613,7 +613,7 @@ describe("IvyContext", () => {
       const req = new Request("http://localhost/", {
         headers: { Cookie: "   key1=value1  ;  key2=value2   " },
       });
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.cookie("key1")).toBe("value1");
       expect(ctx.req.cookie("key2")).toBe("value2");
@@ -623,7 +623,7 @@ describe("IvyContext", () => {
   describe("res.cookie()", () => {
     it("should set basic cookie", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123");
       const response = ctx.res.text("Hello");
@@ -633,7 +633,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with maxAge", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { maxAge: 3600 });
       const response = ctx.res.text("Hello");
@@ -645,7 +645,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with expires", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const expires = new Date("2026-12-31T23:59:59Z");
 
       ctx.res.cookie("session", "abc123", { expires });
@@ -658,7 +658,7 @@ describe("IvyContext", () => {
 
     it("should prefer maxAge over expires when both are set", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const expires = new Date("2026-12-31T23:59:59Z");
 
       ctx.res.cookie("session", "abc123", { maxAge: 3600, expires });
@@ -671,7 +671,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with domain", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { domain: "example.com" });
       const response = ctx.res.text("Hello");
@@ -683,7 +683,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with path", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { path: "/admin" });
       const response = ctx.res.text("Hello");
@@ -695,7 +695,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with secure flag", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { secure: true });
       const response = ctx.res.text("Hello");
@@ -705,7 +705,7 @@ describe("IvyContext", () => {
 
     it("should not set secure flag when false", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { secure: false });
       const response = ctx.res.text("Hello");
@@ -715,7 +715,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with httpOnly flag", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { httpOnly: true });
       const response = ctx.res.text("Hello");
@@ -727,7 +727,7 @@ describe("IvyContext", () => {
 
     it("should not set httpOnly flag when false", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { httpOnly: false });
       const response = ctx.res.text("Hello");
@@ -737,7 +737,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with sameSite=Strict", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { sameSite: "Strict" });
       const response = ctx.res.text("Hello");
@@ -749,7 +749,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with sameSite=Lax", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { sameSite: "Lax" });
       const response = ctx.res.text("Hello");
@@ -761,7 +761,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with sameSite=None", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { sameSite: "None" });
       const response = ctx.res.text("Hello");
@@ -773,7 +773,7 @@ describe("IvyContext", () => {
 
     it("should set cookie with all options", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", {
         maxAge: 3600,
@@ -792,7 +792,7 @@ describe("IvyContext", () => {
 
     it("should work with json response", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { httpOnly: true });
       const response = ctx.res.json({ message: "success" });
@@ -804,7 +804,7 @@ describe("IvyContext", () => {
 
     it("should work with html response", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123", { path: "/" });
       const response = ctx.res.html("<h1>Hello</h1>");
@@ -814,7 +814,7 @@ describe("IvyContext", () => {
 
     it("should work with null response", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "abc123");
       const response = ctx.res.null();
@@ -824,7 +824,7 @@ describe("IvyContext", () => {
 
     it("should override previous cookie with same key", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.cookie("session", "first");
       ctx.res.cookie("session", "second", { httpOnly: true });
@@ -839,7 +839,7 @@ describe("IvyContext", () => {
   describe("res.redirect()", () => {
     it("should return redirect response with default status 302", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/new-location");
 
@@ -849,7 +849,7 @@ describe("IvyContext", () => {
 
     it("should return redirect response with custom status 301", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/permanent", 301);
 
@@ -859,7 +859,7 @@ describe("IvyContext", () => {
 
     it("should return redirect response with status 303", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/see-other", 303);
 
@@ -869,7 +869,7 @@ describe("IvyContext", () => {
 
     it("should return redirect response with status 307", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/temporary", 307);
 
@@ -879,7 +879,7 @@ describe("IvyContext", () => {
 
     it("should return redirect response with status 308", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/permanent-redirect", 308);
 
@@ -889,7 +889,7 @@ describe("IvyContext", () => {
 
     it("should handle absolute URLs", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("https://example.com/page");
 
@@ -899,7 +899,7 @@ describe("IvyContext", () => {
 
     it("should include custom headers", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.res.header("X-Custom-Header", "value");
       const response = ctx.res.redirect("/new-location");
@@ -910,7 +910,7 @@ describe("IvyContext", () => {
 
     it("should have no body", async () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const response = ctx.res.redirect("/new-location");
 
@@ -921,7 +921,7 @@ describe("IvyContext", () => {
   describe("req.setContext() and req.getContext()", () => {
     it("should set and get string values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("email", "test@example.com");
 
@@ -930,7 +930,7 @@ describe("IvyContext", () => {
 
     it("should set and get number values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("userId", 123);
 
@@ -939,7 +939,7 @@ describe("IvyContext", () => {
 
     it("should set and get boolean values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("isAuthenticated", true);
 
@@ -948,7 +948,7 @@ describe("IvyContext", () => {
 
     it("should set and get object values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const user = { id: 1, name: "John Doe", email: "john@example.com" };
 
       ctx.req.setContext("user", user);
@@ -958,7 +958,7 @@ describe("IvyContext", () => {
 
     it("should set and get array values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const tags = ["tag1", "tag2", "tag3"];
 
       ctx.req.setContext("tags", tags);
@@ -968,7 +968,7 @@ describe("IvyContext", () => {
 
     it("should set and get null values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("nullValue", null);
 
@@ -977,7 +977,7 @@ describe("IvyContext", () => {
 
     it("should set and get undefined values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("undefinedValue", undefined);
 
@@ -986,14 +986,14 @@ describe("IvyContext", () => {
 
     it("should return undefined for non-existent keys", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       expect(ctx.req.getContext("nonExistent")).toBeUndefined();
     });
 
     it("should overwrite existing values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("key", "first");
       expect(ctx.req.getContext("key")).toBe("first");
@@ -1004,7 +1004,7 @@ describe("IvyContext", () => {
 
     it("should handle multiple keys independently", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("key1", "value1");
       ctx.req.setContext("key2", "value2");
@@ -1017,7 +1017,7 @@ describe("IvyContext", () => {
 
     it("should work with typed generic parameter", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       interface User {
         id: number;
@@ -1035,11 +1035,11 @@ describe("IvyContext", () => {
 
     it("should not share context between different request contexts", () => {
       const req1 = new Request("http://localhost/1");
-      const ctx1 = new IvyContext(req1);
+      const ctx1 = new VixyContext(req1);
       ctx1.req.setContext("key", "value1");
 
       const req2 = new Request("http://localhost/2");
-      const ctx2 = new IvyContext(req2);
+      const ctx2 = new VixyContext(req2);
       ctx2.req.setContext("key", "value2");
 
       expect(ctx1.req.getContext("key")).toBe("value1");
@@ -1048,7 +1048,7 @@ describe("IvyContext", () => {
 
     it("should maintain context throughout request lifecycle", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       // Simulate middleware setting context
       ctx.req.setContext("email", "test@example.com");
@@ -1064,7 +1064,7 @@ describe("IvyContext", () => {
 
     it("should handle complex nested objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       const complexData = {
         user: {
@@ -1089,7 +1089,7 @@ describe("IvyContext", () => {
 
     it("should handle Date objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const now = new Date("2026-02-14T12:00:00Z");
 
       ctx.req.setContext("timestamp", now);
@@ -1101,7 +1101,7 @@ describe("IvyContext", () => {
 
     it("should handle Map objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const map = new Map([
         ["key1", "value1"],
         ["key2", "value2"],
@@ -1116,7 +1116,7 @@ describe("IvyContext", () => {
 
     it("should handle Set objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const set = new Set([1, 2, 3, 4, 5]);
 
       ctx.req.setContext("set", set);
@@ -1128,7 +1128,7 @@ describe("IvyContext", () => {
 
     it("should handle function values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const fn = (x: number) => x * 2;
 
       ctx.req.setContext("fn", fn);
@@ -1140,7 +1140,7 @@ describe("IvyContext", () => {
 
     it("should handle Symbol keys", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const symKey = "symbolKey";
 
       ctx.req.setContext(symKey, "symbolValue");
@@ -1150,7 +1150,7 @@ describe("IvyContext", () => {
 
     it("should allow storing and retrieving empty strings", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("emptyString", "");
 
@@ -1159,7 +1159,7 @@ describe("IvyContext", () => {
 
     it("should allow storing and retrieving zero", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("zero", 0);
 
@@ -1168,7 +1168,7 @@ describe("IvyContext", () => {
 
     it("should allow storing and retrieving false", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("false", false);
 
@@ -1177,7 +1177,7 @@ describe("IvyContext", () => {
 
     it("should handle rapid successive updates", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       for (let i = 0; i < 100; i++) {
         ctx.req.setContext("counter", i);
@@ -1188,7 +1188,7 @@ describe("IvyContext", () => {
 
     it("should handle many different keys", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       for (let i = 0; i < 100; i++) {
         ctx.req.setContext(`key${i}`, `value${i}`);
@@ -1201,7 +1201,7 @@ describe("IvyContext", () => {
 
     it("should work with class instances", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       class TestClass {
         constructor(public value: string) {}
@@ -1220,7 +1220,7 @@ describe("IvyContext", () => {
 
     it("should handle Error objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const error = new Error("Test error");
 
       ctx.req.setContext("error", error);
@@ -1232,7 +1232,7 @@ describe("IvyContext", () => {
 
     it("should handle regular expressions", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const regex = /test.*pattern/gi;
 
       ctx.req.setContext("regex", regex);
@@ -1244,7 +1244,7 @@ describe("IvyContext", () => {
 
     it("should handle Buffer objects", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const buffer = Buffer.from("Hello World");
 
       ctx.req.setContext("buffer", buffer);
@@ -1256,7 +1256,7 @@ describe("IvyContext", () => {
 
     it("should handle BigInt values", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const bigIntValue = BigInt(9007199254740991);
 
       ctx.req.setContext("bigInt", bigIntValue);
@@ -1267,7 +1267,7 @@ describe("IvyContext", () => {
 
     it("should preserve object references", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const obj = { mutable: true };
 
       ctx.req.setContext("obj", obj);
@@ -1284,7 +1284,7 @@ describe("IvyContext", () => {
 
     it("should work with keys containing special characters", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("key-with-dashes", "value1");
       ctx.req.setContext("key.with.dots", "value2");
@@ -1299,7 +1299,7 @@ describe("IvyContext", () => {
 
     it("should handle unicode keys", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
 
       ctx.req.setContext("🔑", "emoji key");
       ctx.req.setContext("日本語", "japanese");
@@ -1310,7 +1310,7 @@ describe("IvyContext", () => {
 
     it("should handle very long strings", () => {
       const req = new Request("http://localhost/");
-      const ctx = new IvyContext(req);
+      const ctx = new VixyContext(req);
       const longString = "a".repeat(10000);
 
       ctx.req.setContext("longString", longString);
