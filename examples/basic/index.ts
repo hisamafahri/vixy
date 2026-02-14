@@ -46,4 +46,21 @@ app.get("/about", (c) => {
   `);
 });
 
+// Cookie examples
+app.get("/set-cookie", (c) => {
+  c.res.cookie("session", "abc123", {
+    httpOnly: true,
+    maxAge: 3600,
+    path: "/",
+  });
+  return c.res.json({ message: "Cookie set!" });
+});
+
+app.get("/get-cookie", (c) => {
+  const session = c.req.cookie("session");
+  return c.res.json({
+    session: session ?? "No session cookie found",
+  });
+});
+
 export default app;

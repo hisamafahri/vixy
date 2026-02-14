@@ -27,19 +27,31 @@ export interface IvyRequest {
   routePathname: string;
 }
 
+export interface CookieOptions {
+  expires?: Date;
+  maxAge?: number;
+  domain?: string;
+  path?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  sameSite?: "Strict" | "Lax" | "None";
+}
+
 export interface IvyResponse {
   // TODO:
-  // - set cookies
   // - send file/blob
   // - redirect
   // - send stream?
   header: (key: string, value: any) => void;
+  cookie: (key: string, value: string, options?: CookieOptions) => void;
   json: (data: any, status?: ContentfulStatusCode) => Response;
   text: (content: string, status?: ContentfulStatusCode) => Response;
   html: (content: string, status?: ContentfulStatusCode) => Response;
   null: (status?: ContentlessStatusCode) => Response;
 }
 
+// TODO:
+// - set context state, that persists across middlewares/handlers in a SINGLE request context
 export class IvyContext {
   req: IvyRequest;
   res: IvyResponse;
@@ -169,6 +181,38 @@ export class IvyContext {
     this.res = {
       header: (key: string, value: any): void => {
         this.customHeaders[key] = String(value);
+      },
+      cookie: (key: string, value: string, options?: CookieOptions): void => {
+        const parts: string[] = [`${key}=${value}`];
+
+        if (options?.maxAge !== undefined) {
+          parts.push(`Max-Age=${options.maxAge}`);
+        } else if (options?.expires !== undefined) {
+          parts.push(`Expires=${options.expires.toUTCString()}`);
+        }
+
+        if (options?.domain !== undefined) {
+          parts.push(`Domain=${options.domain}`);
+        }
+
+        if (options?.path !== undefined) {
+          parts.push(`Path=${options.path}`);
+        }
+
+        if (options?.secure === true) {
+          parts.push("Secure");
+        }
+
+        if (options?.httpOnly === true) {
+          parts.push("HttpOnly");
+        }
+
+        if (options?.sameSite !== undefined) {
+          parts.push(`SameSite=${options.sameSite}`);
+        }
+
+        const cookieString = parts.join("; ");
+        this.res.header("Set-Cookie", cookieString);
       },
       text: (content: string, status = 200): Response => {
         return new Response(content, {

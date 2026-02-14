@@ -619,4 +619,220 @@ describe("IvyContext", () => {
       expect(ctx.req.cookie("key2")).toBe("value2");
     });
   });
+
+  describe("res.cookie()", () => {
+    it("should set basic cookie", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123");
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123");
+    });
+
+    it("should set cookie with maxAge", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { maxAge: 3600 });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; Max-Age=3600",
+      );
+    });
+
+    it("should set cookie with expires", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+      const expires = new Date("2026-12-31T23:59:59Z");
+
+      ctx.res.cookie("session", "abc123", { expires });
+      const response = ctx.res.text("Hello");
+
+      const cookie = response.headers.get("Set-Cookie");
+      expect(cookie).toContain("session=abc123; Expires=");
+      expect(cookie).toContain("31 Dec 2026 23:59:59 GMT");
+    });
+
+    it("should prefer maxAge over expires when both are set", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+      const expires = new Date("2026-12-31T23:59:59Z");
+
+      ctx.res.cookie("session", "abc123", { maxAge: 3600, expires });
+      const response = ctx.res.text("Hello");
+
+      const cookie = response.headers.get("Set-Cookie");
+      expect(cookie).toContain("Max-Age=3600");
+      expect(cookie).not.toContain("Expires");
+    });
+
+    it("should set cookie with domain", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { domain: "example.com" });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; Domain=example.com",
+      );
+    });
+
+    it("should set cookie with path", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { path: "/admin" });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; Path=/admin",
+      );
+    });
+
+    it("should set cookie with secure flag", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { secure: true });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123; Secure");
+    });
+
+    it("should not set secure flag when false", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { secure: false });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123");
+    });
+
+    it("should set cookie with httpOnly flag", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { httpOnly: true });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; HttpOnly",
+      );
+    });
+
+    it("should not set httpOnly flag when false", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { httpOnly: false });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123");
+    });
+
+    it("should set cookie with sameSite=Strict", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { sameSite: "Strict" });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; SameSite=Strict",
+      );
+    });
+
+    it("should set cookie with sameSite=Lax", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { sameSite: "Lax" });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; SameSite=Lax",
+      );
+    });
+
+    it("should set cookie with sameSite=None", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { sameSite: "None" });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; SameSite=None",
+      );
+    });
+
+    it("should set cookie with all options", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", {
+        maxAge: 3600,
+        domain: "example.com",
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "Strict",
+      });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; Max-Age=3600; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict",
+      );
+    });
+
+    it("should work with json response", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { httpOnly: true });
+      const response = ctx.res.json({ message: "success" });
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=abc123; HttpOnly",
+      );
+    });
+
+    it("should work with html response", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123", { path: "/" });
+      const response = ctx.res.html("<h1>Hello</h1>");
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123; Path=/");
+    });
+
+    it("should work with null response", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "abc123");
+      const response = ctx.res.null();
+
+      expect(response.headers.get("Set-Cookie")).toBe("session=abc123");
+    });
+
+    it("should override previous cookie with same key", () => {
+      const req = new Request("http://localhost/");
+      const ctx = new IvyContext(req);
+
+      ctx.res.cookie("session", "first");
+      ctx.res.cookie("session", "second", { httpOnly: true });
+      const response = ctx.res.text("Hello");
+
+      expect(response.headers.get("Set-Cookie")).toBe(
+        "session=second; HttpOnly",
+      );
+    });
+  });
 });
