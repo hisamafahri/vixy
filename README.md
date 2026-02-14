@@ -1,15 +1,30 @@
-# vixy
+# Vixy
 
-To install dependencies:
+A lightweight web framework for Bun runtime with Express-like API for routing, path/query parameters, wildcards, and multiple HTTP methods.
+
+## Overview
+
+Vixy provides a simple and familiar routing API for building web applications on the Bun runtime. It features:
+
+- Express-like routing with method chaining
+- Feature complete with built-in response helpers for text, JSON, and HTML
+- Powered by `find-my-way` for fast route matching
+- Delightful developer experience with consistent API
+
+## Quickstart
 
 ```bash
-bun install
+bun create vixy@latest
 ```
 
-To run:
+## Documentation
 
-```bash
-bun run index.ts
-```
+For full documentation, visit [https://vixyjs.github.io/docs](https://vixyjs.github.io/docs)
 
-This project was created using `bun init` in bun v1.3.6. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Author
+
+[Hisam Fahri](https://hisam.dev): [@hisamafahri](https://github.com/hisamafahri)
+
+## License
+
+[MIT](LICENSE)
