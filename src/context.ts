@@ -6,14 +6,19 @@ import type {
 
 export interface VixyRequest {
   raw: Request;
-  param: (name: string) => string | undefined;
-  params: Record<string, string>;
+  param: {
+    (): Record<string, string>;
+    (name: string): string | undefined;
+  };
   query: {
     (): Record<string, string>;
     (name: string): string | undefined;
   };
   queries: (name: string) => string[] | undefined;
-  header: (name: string) => string | undefined;
+  header: {
+    (): Record<string, string>;
+    (name: string): string | undefined;
+  };
   cookie: {
     (): Record<string, string>;
     (name: string): string | undefined;
@@ -137,16 +142,45 @@ export class VixyContext {
       return this.bodyCache;
     };
 
+    // Create param function with overloads
+    const paramFn = ((name?: string) => {
+      if (name === undefined) {
+        // Return all params as an object
+        return params;
+      }
+      // Return specific param
+      return params[name];
+    }) as {
+      (): Record<string, string>;
+      (name: string): string | undefined;
+    };
+
+    // Create header function with overloads
+    const headerFn = ((name?: string) => {
+      if (name === undefined) {
+        // Return all headers as an object
+        const allHeaders: Record<string, string> = {};
+        rawRequest.headers.forEach((value, key) => {
+          allHeaders[key] = value;
+        });
+        return allHeaders;
+      }
+      // Return specific header
+      return rawRequest.headers.get(name) ?? undefined;
+    }) as {
+      (): Record<string, string>;
+      (name: string): string | undefined;
+    };
+
     this.req = {
       raw: rawRequest,
-      params: params,
-      param: (name: string) => params[name],
+      param: paramFn,
       query: queryFn,
       queries: (name: string) => {
         const values = searchParams.getAll(name);
         return values.length > 0 ? values : undefined;
       },
-      header: (name: string) => rawRequest.headers.get(name) ?? undefined,
+      header: headerFn,
       cookie: cookieFn,
       json: async () => {
         const buffer = await getBodyCache();

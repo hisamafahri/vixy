@@ -1,13 +1,13 @@
 export type { CookieOptions } from "./cookie";
 export type {
+  ClientErrorStatusCode,
   ContentfulStatusCode,
   ContentlessStatusCode,
-  StatusCode,
-  InfoStatusCode,
-  SuccessStatusCode,
-  RedirectStatusCode,
-  ClientErrorStatusCode,
-  ServerErrorStatusCode,
-  UnofficialStatusCode,
   DeprecatedStatusCode,
+  InfoStatusCode,
+  RedirectStatusCode,
+  ServerErrorStatusCode,
+  StatusCode,
+  SuccessStatusCode,
+  UnofficialStatusCode,
 } from "./status-code";

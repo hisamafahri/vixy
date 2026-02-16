@@ -152,7 +152,7 @@ describe("VixyContext", () => {
 
       expect(ctx.req.param("id")).toBe("123");
       expect(ctx.req.param("name")).toBe("john");
-      expect(ctx.req.params).toEqual(params);
+      expect(ctx.req.param()).toEqual(params);
     });
 
     it("should initialize with empty params when not provided", () => {
@@ -160,7 +160,7 @@ describe("VixyContext", () => {
       const ctx = new VixyContext(req);
 
       expect(ctx.req.param("anything")).toBeUndefined();
-      expect(ctx.req.params).toEqual({});
+      expect(ctx.req.param()).toEqual({});
     });
 
     it("should provide param method on req object", () => {
@@ -200,13 +200,14 @@ describe("VixyContext", () => {
   });
 
   describe("req.params", () => {
-    it("should provide direct access to params object", () => {
+    it("should provide direct access to all params via param()", () => {
       const req = new Request("http://localhost/test");
       const params = { id: "123", name: "test" };
       const ctx = new VixyContext(req, params);
 
-      expect(ctx.req.params.id).toBe("123");
-      expect(ctx.req.params.name).toBe("test");
+      const allParams = ctx.req.param();
+      expect(allParams.id).toBe("123");
+      expect(allParams.name).toBe("test");
     });
   });
 

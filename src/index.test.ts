@@ -525,14 +525,11 @@ describe("Vixy", () => {
       expect(await postRes.text()).toBe("Resource 456");
     });
 
-    it("should allow accessing params via req.params object", async () => {
+    it("should allow accessing params via req.param() without args", async () => {
       const app = new Vixy();
 
       app.get("/user/:id/profile/:section", (c) => {
-        return c.res.json({
-          id: c.req.params.id,
-          section: c.req.params.section,
-        });
+        return c.res.json(c.req.param());
       });
 
       const req = new Request("http://localhost/user/456/profile/settings", {
@@ -1068,6 +1065,35 @@ describe("Vixy", () => {
         userId: "123",
         format: "compact",
         accept: "application/json",
+      });
+    });
+
+    it("should return all headers when called without name", async () => {
+      const app = new Vixy();
+
+      app.get("/test", (c) => {
+        const allHeaders = c.req.header();
+        return c.res.json({
+          hasUserAgent: allHeaders["user-agent"] !== undefined,
+          hasAccept: allHeaders["accept"] !== undefined,
+          hasCustom: allHeaders["x-custom"] !== undefined,
+        });
+      });
+
+      const req = new Request("http://localhost/test", {
+        method: "GET",
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          Accept: "application/json",
+          "X-Custom": "test-value",
+        },
+      });
+      const response = await app.fetch(req);
+
+      expect(await response.json()).toEqual({
+        hasUserAgent: true,
+        hasAccept: true,
+        hasCustom: true,
       });
     });
   });

@@ -22,7 +22,7 @@ const app = new Vixy();
 app.get("/", () => {});
 app.route("/v1", userController);
 
-app.listen()
+app.listen();
 ```
 
 ## Ordering
@@ -30,9 +30,9 @@ app.listen()
 From hono
 
 ```ts
-three.get("/hi", (c) => c.text("hi"))
-two.route("/three", three)
-app.route("/two", two)
+three.get("/hi", (c) => c.text("hi"));
+two.route("/three", three);
+app.route("/two", two);
 ```
 
 ```sh
