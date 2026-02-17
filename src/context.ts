@@ -32,7 +32,7 @@ export interface VixyRequest {
   pathname: string;
   routePathname: string;
   setContext: <T = any>(key: string, value: T) => void;
-  getContext: <T = any>(key: string) => T | undefined;
+  getContext: <T = any>(key: string) => T;
 }
 
 export interface CookieOptions {
@@ -215,7 +215,7 @@ export class VixyContext {
       setContext: <T = any>(key: string, value: T): void => {
         this.contextStore[key] = value;
       },
-      getContext: <T = any>(key: string): T | undefined => {
+      getContext: <T = any>(key: string): T => {
         return this.contextStore[key];
       },
     };
