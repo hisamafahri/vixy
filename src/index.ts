@@ -39,9 +39,15 @@ export interface ListenOptions {
   onListening?: (info: { port: number; hostname: string }) => void;
 }
 
+export type ErrorHandler = (
+  c: VixyContext,
+  error: Error,
+) => Response | Promise<Response>;
+
 export default class Vixy {
   private router: FindMyWay.Instance<FindMyWay.HTTPVersion.V1>;
-  private notFoundHandler?: Handler;
+  private onNotFoundHandler?: Handler;
+  private errorHandler?: ErrorHandler;
   private globalMiddleware: MiddlewareEntry[] = [];
   private server?: ReturnType<typeof Bun.serve>;
   private routeRegistry: RouteRegistryEntry[] = [];
@@ -275,8 +281,13 @@ export default class Vixy {
     return this;
   }
 
-  notFound(handler: Handler): this {
-    this.notFoundHandler = handler;
+  onNotFound(handler: Handler): this {
+    this.onNotFoundHandler = handler;
+    return this;
+  }
+
+  onError(handler: ErrorHandler): this {
+    this.errorHandler = handler;
     return this;
   }
 
@@ -313,9 +324,9 @@ export default class Vixy {
       return await this.executeMiddlewareChain(context, allMiddleware, handler);
     }
 
-    if (this.notFoundHandler) {
+    if (this.onNotFoundHandler) {
       const context = new VixyContext(req, {}, pathname);
-      return await this.notFoundHandler(context);
+      return await this.onNotFoundHandler(context);
     }
 
     return new Response("Not Found", { status: 404 });
@@ -329,6 +340,24 @@ export default class Vixy {
       port,
       hostname,
       fetch: this.fetch,
+      error: (error) => {
+        if (this.errorHandler) {
+          // Create a minimal context for error handler
+          const context = new VixyContext(
+            new Request("http://localhost"),
+            {},
+            "/",
+          );
+          return this.errorHandler(context, error);
+        }
+        // Default error response
+        return new Response(`<pre>${error}\n${error.stack}</pre>`, {
+          status: 500,
+          headers: {
+            "Content-Type": "text/html",
+          },
+        });
+      },
     });
 
     if (options.onListening) {

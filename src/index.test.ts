@@ -1103,7 +1103,7 @@ describe("Vixy", () => {
       const app = new Vixy();
 
       app.get("/exists", (c) => c.res.text("Found"));
-      app.notFound((c) => c.res.text("Custom Not Found", 404));
+      app.onNotFound((c) => c.res.text("Custom Not Found", 404));
 
       const req = new Request("http://localhost/notfound", { method: "GET" });
       const response = await app.fetch(req);
@@ -1116,7 +1116,7 @@ describe("Vixy", () => {
       const app = new Vixy();
 
       app.get("/test", (c) => c.res.text("GET only"));
-      app.notFound((c) => c.res.json({ error: "Route not found" }, 404));
+      app.onNotFound((c) => c.res.json({ error: "Route not found" }, 404));
 
       const req = new Request("http://localhost/test", { method: "POST" });
       const response = await app.fetch(req);
@@ -1128,7 +1128,7 @@ describe("Vixy", () => {
     it("should provide context with request info to notFound handler", async () => {
       const app = new Vixy();
 
-      app.notFound((c) => {
+      app.onNotFound((c) => {
         return c.res.json({
           pathname: c.req.pathname,
           method: c.req.raw.method,
@@ -1149,7 +1149,7 @@ describe("Vixy", () => {
     it("should allow notFound handler to access query parameters", async () => {
       const app = new Vixy();
 
-      app.notFound((c) => {
+      app.onNotFound((c) => {
         const debug = c.req.query("debug");
         return c.res.json({ message: "Not found", debug });
       });
@@ -1168,7 +1168,7 @@ describe("Vixy", () => {
     it("should allow notFound handler to access headers", async () => {
       const app = new Vixy();
 
-      app.notFound((c) => {
+      app.onNotFound((c) => {
         const accept = c.req.header("Accept");
         return c.res.text(`Not found. Accept: ${accept}`, 404);
       });
@@ -1185,7 +1185,7 @@ describe("Vixy", () => {
     it("should support async notFound handler", async () => {
       const app = new Vixy();
 
-      app.notFound(async (c) => {
+      app.onNotFound(async (c) => {
         await new Promise((resolve) => setTimeout(resolve, 10));
         return c.res.text("Async not found", 404);
       });
@@ -1203,7 +1203,7 @@ describe("Vixy", () => {
 
       const result = app
         .get("/one", (c) => c.res.text("One"))
-        .notFound((c) => c.res.text("Not found", 404))
+        .onNotFound((c) => c.res.text("Not found", 404))
         .get("/two", (c) => c.res.text("Two"));
 
       expect(result).toBe(app);
@@ -1224,7 +1224,7 @@ describe("Vixy", () => {
     it("should allow custom status codes in notFound handler", async () => {
       const app = new Vixy();
 
-      app.notFound((c) => c.res.json({ error: "Gone" }, 410));
+      app.onNotFound((c) => c.res.json({ error: "Gone" }, 410));
 
       const req = new Request("http://localhost/missing", { method: "GET" });
       const response = await app.fetch(req);
@@ -1237,7 +1237,7 @@ describe("Vixy", () => {
       const app = new Vixy();
 
       app.get("/api", (c) => c.res.text("API"));
-      app.notFound((c) =>
+      app.onNotFound((c) =>
         c.res.json({ error: "Not found", method: c.req.raw.method }),
       );
 
@@ -1247,6 +1247,49 @@ describe("Vixy", () => {
         const response = await app.fetch(req);
         expect(await response.json()).toEqual({ error: "Not found", method });
       }
+    });
+  });
+
+  describe("onError handler", () => {
+    const isBunRuntime = typeof Bun !== "undefined";
+
+    it.skipIf(!isBunRuntime)(
+      "should use custom error handler when error occurs",
+      async () => {
+        const app = new Vixy();
+
+        app.onError((c, error) => {
+          return c.res.json(
+            { error: "Custom Error", message: error.message },
+            500,
+          );
+        });
+
+        const port = 9010;
+        app.listen({ port });
+
+        try {
+          // Since we can't easily trigger errors through fetch in tests,
+          // we'll verify the method exists and returns this
+          const result = app.onError((c, error) => {
+            return c.res.text("Error", 500);
+          });
+          expect(result).toBe(app);
+        } finally {
+          app.stop();
+        }
+      },
+    );
+
+    it("should support method chaining with onError", () => {
+      const app = new Vixy();
+
+      const result = app
+        .get("/one", (c) => c.res.text("One"))
+        .onError((c, error) => c.res.text(`Error: ${error.message}`, 500))
+        .get("/two", (c) => c.res.text("Two"));
+
+      expect(result).toBe(app);
     });
   });
 

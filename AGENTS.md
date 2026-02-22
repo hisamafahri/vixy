@@ -100,7 +100,8 @@ constructor() {
 
 - Return appropriate HTTP status codes
 - Use simple responses: `new Response("Not Found", { status: 404 })`
-- `notFoundHandler` is called if registered when route not found
+- `onNotFoundHandler` is called if registered when route not found
+- `errorHandler` is called if registered when an error occurs in Bun.serve
 
 ### Method Chaining
 
